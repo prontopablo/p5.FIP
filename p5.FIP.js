@@ -300,7 +300,6 @@ const fip = {
         precision highp float;
         varying vec2 vTexCoord;
         uniform sampler2D texture;
-        uniform vec2 texOffset;
         uniform float edgeThreshold;
 
 
@@ -318,7 +317,7 @@ const fip = {
             vec4 neighborColor4 = texture2D(texture, tc - vec2(0.0, 0.01));
 
             // Calculate the average difference
-            float delta = length(centerColor.rgb - (neighborColor1.rgb + neighborColor2.rgb + neighborColor3.rgb +     neighborColor4.rgb) / 4.0);
+            float delta = length(centerColor.rgb - (neighborColor1.rgb + neighborColor2.rgb + neighborColor3.rgb + neighborColor4.rgb) / 4.0);
             
             // If the difference is above the threshold, it's an edge pixel
             if (delta > edgeThreshold) {
@@ -854,8 +853,6 @@ const fip = {
         precision highp float;
         varying vec2 vTexCoord;
         uniform sampler2D texture;
-        uniform float saturation;
-
 
         void main() {
             vec2 tc = vTexCoord.st;

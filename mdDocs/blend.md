@@ -5,7 +5,7 @@ Blends textures together based on a mix factor and blending type.
 <br>
 `texture2` **Texture**: The second texture to be blended. Default: **`undefined`**
 <br>
-`textureSize` **Vec2:** The size of the texture used for sampling neighboring pixels. Default: **`(0.0, 0.0)`**
+`uTextureSize` **Vec2:** The size of the texture used for sampling neighboring pixels. Default: **`(0.0, 0.0)`**
 <br>
 `mixFactor` **Float**: How much weight to give each picture in the blending. A value of 0.0 only outputs texture1, 1.0 only outputs texture2. Default: **`0.0`**
 <br>

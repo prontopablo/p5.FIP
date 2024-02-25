@@ -1,32 +1,45 @@
 Applies an emboss effect to the input texture, creating a 3D appearance. This is achieved by calculating the gradient of the pixel values and normalizing the result.
 
 ## Parameters
-`texture` **Texture**: The input texture to be filtered. Default: **`The entire canvas`**
+`texture` **Texture**: The input texture to be filtered. Default: **`undefined`**
 <br>
-`texOffset` **Vec2:** The offset used for sampling neighboring pixels. Default: **`(1.0 / width, 1.0 / height)`**
-<br>
+`uTextureSize` **Vec2:** The size of the texture used for sampling neighboring pixels. Default: **`(0.0, 0.0)`**
 
 
 ## Example
-```java
-import fip.*;
+```javascript
+let layer,
+  bird,
+  emboss;
 
-PShader emboss;
-
-PImage ireland;
-
-void setup() {
-  size(1000, 1000, P3D);
-
-  emboss = loadShader("emboss.glsl");
-
-  ireland = loadImage("ireland.jpg");
+function preload() {
+    emboss = createShader(fip.defaultVert, fip.emboss); // Load the shader
+    bird = loadImage("bird.jpg");
 }
 
-void draw() {
-  image(ireland, 0, 0, width, height);
-
-  filter(emboss);
+function setup() {
+    createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
 }
-
+  
+function draw() {
+    background(0);
+    
+    // Draw an image to a framebuffer 
+    layer.begin();
+    clear();
+    scale(1, -1); // Flip the Y-axis to match the canvas (different coordinate system in framebuffer)
+    image(bird, -width / 2, -height / 2, width, height);
+    layer.end();
+    
+    // Apply the shader
+    shader(emboss);
+    
+    // Set the shader uniforms
+    emboss.setUniform("texture", layer.color); // Set the texture to apply the shader to
+    emboss.setUniform('uTextureSize', [width, height]); // Set the size of the texture used
+    
+    rect(0, 0, width, height); // Draw a rectangle to apply the shader to
+    resetShader(); 
+}
 ```

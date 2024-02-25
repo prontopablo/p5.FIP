@@ -3,7 +3,7 @@ Detects edges using the Canny edge detection algorithm.
 ## Parameters
 `texture` **Texture**: The input texture to be filtered. Default: **`undefined`**
 <br>
-`textureSize` **Vec2:** The size of the texture used for sampling neighboring pixels. Default: **`(0.0, 0.0)`**
+`uTextureSize` **Vec2:** The size of the texture used for sampling neighboring pixels. Default: **`(0.0, 0.0)`**
 <br>
 `thresholdLow` **Float:** The lower threshold for edge detection. Pixels with intensity gradients below this threshold will be suppressed. Default: **`0.0`**
 <br>

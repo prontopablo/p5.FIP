@@ -1,28 +1,41 @@
 Inverts the colors of a texture.
 
 ## Parameters
-`texture` **Texture**: The input texture to be filtered. Default: **`The entire canvas`**
+`texture` **Texture**: The input texture to be filtered. Default: **`undefined`**
 
 ## Example
-```java
-import fip.*;
+```javascript
+let layer,
+  bird,
+  invertColors;
 
-PShader invertColors;
-
-PImage ireland;
-
-void setup() {
-  size(1000, 1000, P3D);
-
-  invertColors = loadShader("invertColors.glsl");
-
-  ireland = loadImage("ireland.jpg");
+function preload() {
+    invertColors = createShader(fip.defaultVert, fip.invertColors); // Load the shader
+    bird = loadImage("bird.jpg");
 }
 
-void draw() {
-  image(ireland, 0, 0, width, height);
-
-  filter(invertColors);
+function setup() {
+    createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
 }
-
+  
+function draw() {
+    background(0);
+    
+    // Draw an image to a framebuffer 
+    layer.begin();
+    clear();
+    scale(1, -1); // Flip the Y-axis to match the canvas (different coordinate system in framebuffer)
+    image(bird, -width / 2, -height / 2, width, height);
+    layer.end();
+    
+    // Apply the shader
+    shader(invertColors);
+    
+    // Set the shader uniforms
+    invertColors.setUniform("texture", layer.color); // Set the texture to apply the shader to
+    
+    rect(0, 0, width, height); // Draw a rectangle to apply the shader to
+    resetShader(); 
+}
 ```

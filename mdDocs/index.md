@@ -14,7 +14,7 @@ _Left and right arrow keys cycle filters, up and down arrow keys cycle images._
 
 ## Getting Started
 
-To use FIP you can include it in your index.html file:
+To use p5.FIP you can include it in your index.html file:
 ```html
     <head>
     <!-- ...-->

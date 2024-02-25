@@ -1,30 +1,44 @@
 Local image processing technique used for noise reduction and edge preservation. It divides the image into quadrants, calculates the mean and variance of color values in each quadrant, and selects the quadrant with the minimum color variance. This results in a smoothed version of the original image.
 
 ## Parameters
-`texture` **Texture**: The input texture to be filtered. Default: **`The entire canvas`**
+`texture` **Texture**: The input texture to be filtered. Default: **`undefined`**
 <br>
-`texOffset` **Vec2:** The offset used for sampling neighboring pixels. Default: **`(1.0 / width, 1.0 / height)`**
+`uTextureSize` **Vec2:** The size of the texture used for sampling neighboring pixels. Default: **`(0.0, 0.0)`**
 
 ## Example
-```java
-import fip.*;
+```javascript
+let layer,
+  bird,
+  kuwahara;
 
-PShader kuwahara;
-
-PImage ireland;
-
-void setup() {
-  size(1000, 1000, P3D);
-
-  kuwahara = loadShader("kuwahara.glsl");
-
-  ireland = loadImage("ireland.jpg");
+function preload() {
+    kuwahara = createShader(fip.defaultVert, fip.kuwahara); // Load the shader
+    bird = loadImage("bird.jpg");
 }
 
-void draw() {
-  image(ireland, 0, 0, width, height);
-
-  filter(kuwahara);
+function setup() {
+    createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
 }
-
+  
+function draw() {
+    background(0);
+    
+    // Draw an image to a framebuffer 
+    layer.begin();
+    clear();
+    scale(1, -1); // Flip the Y-axis to match the canvas (different coordinate system in framebuffer)
+    image(bird, -width / 2, -height / 2, width, height);
+    layer.end();
+    
+    // Apply the shader
+    shader(kuwahara);
+    
+    // Set the shader uniforms
+    kuwahara.setUniform("texture", layer.color); // Set the texture to apply the shader to
+    kuwahara.setUniform('uTextureSize', [width, height]); // Set the size of the texture used
+    
+    rect(0, 0, width, height); // Draw a rectangle to apply the shader to
+    resetShader(); 
+}
 ```

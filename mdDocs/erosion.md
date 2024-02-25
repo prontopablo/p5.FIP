@@ -1,34 +1,44 @@
-Computes the minimum pixel value within a local neighborhood. The structuring element is a square kernel centered at each pixel, and its size is determined by the specified radius.
+Computes the minimum pixel value within a local neighborhood. The structuring element is a square kernel centered at each pixel.
 
 ## Parameters
-`texture` **Texture**: The input texture to be filtered. Default: **`The entire canvas`**
+`texture` **Texture**: The input texture to be filtered. Default: **`undefined`**
 <br>
-`texOffset` **Vec2:** The offset used for sampling neighboring pixels. Default: **`(1.0 / width, 1.0 / height)`**
-<br>
-`radius` **Int:** The radius of the erosion operation. Default: **`3`**
+`uTextureSize` **Vec2:** The size of the texture used for sampling neighboring pixels. Default: **`(0.0, 0.0)`**
 
 ## Example
-```java
-import fip.*;
+```javascript
+let layer,
+  bird,
+  erosion;
 
-PShader erosion;
-
-PImage ireland;
-
-void setup() {
-  size(1000, 1000, P3D);
-
-  erosion = loadShader("erosion.glsl");
-
-  ireland = loadImage("ireland.jpg");
-
-  erosion.set("radius", 3);
+function preload() {
+    erosion = createShader(fip.defaultVert, fip.erosion); // Load the shader
+    bird = loadImage("bird.jpg");
 }
 
-void draw() {
-  image(ireland, 0, 0, width, height);
-
-  filter(erosion);
+function setup() {
+    createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
 }
-
+  
+function draw() {
+    background(0);
+    
+    // Draw an image to a framebuffer 
+    layer.begin();
+    clear();
+    scale(1, -1); // Flip the Y-axis to match the canvas (different coordinate system in framebuffer)
+    image(bird, -width / 2, -height / 2, width, height);
+    layer.end();
+    
+    // Apply the shader
+    shader(erosion);
+    
+    // Set the shader uniforms
+    erosion.setUniform("texture", layer.color); // Set the texture to apply the shader to
+    erosion.setUniform('uTextureSize', [width, height]); // Set the size of the texture used
+    
+    rect(0, 0, width, height); // Draw a rectangle to apply the shader to
+    resetShader(); 
+}
 ```

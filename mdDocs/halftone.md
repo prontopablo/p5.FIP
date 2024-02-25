@@ -1,40 +1,50 @@
 Applies a halftone effect by converting texture coordinates to screen space, defining cells based on the specified size, and calculating dots within each cell.
 
 ## Parameters
-`texture` **Texture**: The input texture to be filtered. Default: **`The entire canvas`**
+`texture` **Texture**: The input texture to be filtered. Default: **`undefined`**
 <br>
-`resolution` **Vec2**: The resolution of the input texture. Default: **`vec2(1.0)`**
+`resolution` **Vec2**: The resolution of the input texture. Default: **`undefined`**
 <br>
-`texOffset` **Vec2:** The offset used for sampling neighboring pixels. Default: **`(1.0 / width, 1.0 / height)`**
+`cellSize` **Float:** The size of each halftone cell. Default: **`0.0`**
 <br>
-`cellSize` **Float:** The size of each halftone cell. Default: **`20.0`**
-<br>
-`threshold` Float: The threshold value for dot creation. A higher value results in fewer dots. Default: **`0.8`**
+`threshold` Float: The threshold value for dot creation. A higher value results in fewer dots. Default: **`0.0`**
 
 ## Example
-```java
-import fip.*;
+```javascript
+let layer,
+  bird,
+  halftone;
 
-PShader halftone;
-
-PImage ireland;
-
-void setup() {
-  size(1000, 1000, P3D);
-
-  halftone = loadShader("halftone.glsl");
-
-  ireland = loadImage("ireland.jpg");
-
-  halftone.set("resolution", width, height);
-  halftone.set("cellSize", 5.0);
-  halftone.set("threshold", 0.2);
+function preload() {
+    halftone = createShader(fip.defaultVert, fip.halftone); // Load the shader
+    bird = loadImage("bird.jpg");
 }
 
-void draw() {
-  image(ireland, 0, 0, width, height);
-
-  filter(halftone);
+function setup() {
+    createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
 }
+  
+function draw() {
+    background(0);
+    
+    // Draw an image to a framebuffer 
+    layer.begin();
+    clear();
+    scale(1, -1); // Flip the Y-axis to match the canvas (different coordinate system in framebuffer)
+    image(bird, -width / 2, -height / 2, width, height);
+    layer.end();
+    
+    // Apply the shader
+    shader(halftone);
+    
+    // Set the shader uniforms
+    halftone.setUniform("texture", layer.color); // Set the texture to apply the shader to
+    halftone.setUniform('resolution', [width, height]);
+    halftone.setUniform('cellSize', 4.0);
+    halftone.setUniform('threshold', 0.2);
 
+    rect(0, 0, width, height); // Draw a rectangle to apply the shader to
+    resetShader(); 
+}
 ```

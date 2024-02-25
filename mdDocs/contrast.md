@@ -1,30 +1,44 @@
 Adjusts the contrast.
 
 ## Parameters
-`texture` **Texture**: The input texture to be filtered. Default: **`The entire canvas`**
+`texture` **Texture**: The input texture to be filtered. Default: **`undefined`**
 <br>
-`contrast` **Float:** The contrast adjustment factor. A value of 1.0 leaves the contrast unchanged, while higher values increase contrast, and lower values decrease contrast. Default: **`2.0`**
+`contrast` **Float:** The contrast adjustment factor. A value of 1.0 leaves the contrast unchanged, while higher values increase contrast, and lower values decrease contrast. Default: **`0.0`**
 
 ## Example
-```java
-import fip.*;
+```javascript
+let layer,
+  bird,
+  contrast;
 
-PShader contrast;
-PImage ireland;
-
-void setup() {
-  size(1000, 1000, P3D);
-
-  contrast = loadShader("contrast.glsl");
-
-  ireland = loadImage("ireland.jpg");
-
-  contrast.set("contrast", 1.5);
+function preload() {
+    contrast = createShader(fip.defaultVert, fip.contrast); // Load the shader
+    bird = loadImage("bird.jpg");
 }
 
-void draw() {
-  image(ireland, 0, 0, width, height);
+function setup() {
+    createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+}
+  
+function draw() {
+    background(0);
+    
+    // Draw an image to a framebuffer 
+    layer.begin();
+    clear();
+    scale(1, -1); // Flip the Y-axis to match the canvas (different coordinate system in framebuffer)
+    image(bird, -width / 2, -height / 2, width, height);
+    layer.end();
+    
+    // Apply the shader
+    shader(contrast);
+    
+    // Set the shader uniforms
+    contrast.setUniform("texture", layer.color); // Set the texture to apply the shader to
+    contrast.setUniform('contrast', 2.0);
 
-  filter(contrast);
+    rect(0, 0, width, height); // Draw a rectangle to apply the shader to
+    resetShader(); 
 }
 ```
