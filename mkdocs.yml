@@ -1,0 +1,107 @@
+site_name: p5.FIP
+
+plugins:
+  - offline
+  - search
+
+repo_url: https://github.com/prontopablo/p5.FIP
+
+extra:
+  generator: false
+  homepage: index.html
+
+markdown_extensions:
+  - toc:
+      toc_depth: 0
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+theme:
+  name: material
+  features:
+    - toc.integrate
+    - navigation.path
+    - navigation.instant.preview
+    - navigation.expand
+    - content.code.copy
+    - search.suggest
+  icon:
+    logo: material/video-image
+    repo: fontawesome/brands/github
+  palette: 
+     # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: pink
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: pink
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+nav:
+  - Getting started:
+    - Installation: installation.md
+    - Usage: usage.md
+    - Setting Parameters: settingParameters.md
+    - Issues: issues.md
+
+  - Reference:
+    - Anti-aliasing: antiAliasing.md
+    - Bilateral: bilateral.md
+    - Blend: blend.md
+    - Bloom: bloom.md
+    - Box Blur: boxBlur.md
+    - Brightness: brightness.md
+    - Canny Edge Detection: cannyEdgeDetection.md
+    - Cartoon: cartoon.md
+    - Contrast: contrast.md
+    - CRT: crt.md
+    - Deform: deform.md
+    - Difference of Gaussian: differenceOfGaussian.md
+    - Dilate: dilate.md
+    - Dithering: dithering.md
+    - Dot: dot.md
+    - Duotone: duoTone.md
+    - Edge Preserving Smooth: edgePreservingSmooth.md
+    - Emboss: emboss.md
+    - Erosion: erosion.md
+    - Flip: flip.md
+    - Gamma: gamma.md
+    - Gaussian Blur: gaussianBlur.md
+    - Glitch: glitch.md
+    - Grayscale: grayscale.md
+    - Halftone: halftone.md
+    - Invert Colors: invertColors.md
+    - Kuwahara: kuwahara.md
+    - Laplacian Edge Enhancement: laplacianEdgeEnhancement.md
+    - Linocut: linocut.md
+    - Mosaic: mosaic.md
+    - Motion Blur: motionBlur.md
+    - Pixelate: pixelate.md
+    - Quantization: quantization.md
+    - Ripple: ripple.md
+    - Rotate: rotate.md
+    - Saturation: saturation.md
+    - Sepia: sepia.md
+    - Sharpen: sharpen.md
+    - Sketch: sketch.md
+    - Sobel Edge Detection: sobelEdgeDetection.md
+    - Solarize: solarize.md
+    - Static: static.md
+    - Threshold: threshold.md
+    - Unsharp Masking: unsharpMasking.md
+    - Vignette: vignette.md
+
+  - Resources:
+    - List of Resources: resources.md
