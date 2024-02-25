@@ -7,9 +7,9 @@ Blends textures together based on a mix factor and blending type.
 <br>
 `textureSize` **Vec2:** The size of the texture used for sampling neighboring pixels. Default: **`(0.0, 0.0)`**
 <br>
-`mixFactor` **Float**: How much weight to give each picture in the blending. A value of 0.0 only outputs texture1, 1.0 only outputs texture2. Default: **`0.5`**
+`mixFactor` **Float**: How much weight to give each picture in the blending. A value of 0.0 only outputs texture1, 1.0 only outputs texture2. Default: **`0.0`**
 <br>
-`blendingMode` **Int**: Which blending mode to use. Below is a table of the values and their respective blend modes. Default: **`1.0`**
+`blendingMode` **Int**: Which blending mode to use. Below is a table of the values and their respective blend modes. Default: **`0.0`**
 
 | blendingMode  | Blend Mode                  |
 |---------------|-----------------------------|

@@ -1,30 +1,44 @@
 Adjusts the brightness.
 
 ## Parameters
-`texture` **Texture**: The input texture to be filtered. Default: **`The entire canvas`**
+`texture` **Texture**: The input texture to be filtered. Default: **`undefined`**
 <br>
-`brightness` **Float:** The factor by which to adjust the brightness. A value less than 1.0 darkens the image, while a value greater than 1.0 brightens it. Default: **`0.7`**
+`brightness` **Float:** The factor by which to adjust the brightness. A value less than 1.0 darkens the image, while a value greater than 1.0 brightens it. Default: **`0.0`**
 
 ## Example
-```java
-import fip.*;
+```javascript
+let layer,
+  bird,
+  brightness;
 
-PShader brightness;
-PImage ireland;
-
-void setup() {
-  size(1000, 1000, P3D);
-
-  brightness = loadShader("brightness.glsl");
-
-  ireland = loadImage("ireland.jpg");
-
-  brightness.set("brightness", 0.7);
+function preload() {
+    brightness = createShader(fip.defaultVert, fip.brightness); // Load the shader
+    bird = loadImage("bird.jpg");
 }
 
-void draw() {
-  image(ireland, 0, 0, width, height);
+function setup() {
+    createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+}
+  
+function draw() {
+    background(0);
+    
+    // Draw an image to a framebuffer 
+    layer.begin();
+    clear();
+    scale(1, -1); // Flip the Y-axis to match the canvas (different coordinate system in framebuffer)
+    image(bird, -width / 2, -height / 2, width, height);
+    layer.end();
+    
+    // Apply the shader
+    shader(brightness);
+    
+    // Set the shader uniforms
+    brightness.setUniform("texture", layer.color); // Set the texture to apply the shader to
+    brightness.setUniform('brightness', 2.1);
 
-  filter(brightness);
+    rect(0, 0, width, height); // Draw a rectangle to apply the shader to
+    resetShader(); 
 }
 ```

@@ -1,35 +1,49 @@
 Detects edges using the Canny edge detection algorithm.
 
 ## Parameters
-`texture` **Texture**: The input texture to be filtered. Default: **`The entire canvas`**
+`texture` **Texture**: The input texture to be filtered. Default: **`undefined`**
 <br>
-`texOffset` **Vec2:** The offset used for sampling neighboring pixels. Default: **`(1.0 / width, 1.0 / height)`**
+`textureSize` **Vec2:** The size of the texture used for sampling neighboring pixels. Default: **`(0.0, 0.0)`**
 <br>
-`thresholdLow` **Float:** The lower threshold for edge detection. Pixels with intensity gradients below this threshold will be suppressed. Default: **`0.1`**
+`thresholdLow` **Float:** The lower threshold for edge detection. Pixels with intensity gradients below this threshold will be suppressed. Default: **`0.0`**
 <br>
-`thresholdHigh` **Float:** The higher threshold for edge detection. Pixels with intensity gradients above this threshold will be considered strong edges. Default: **`0.3`**
+`thresholdHigh` **Float:** The higher threshold for edge detection. Pixels with intensity gradients above this threshold will be considered strong edges. Default: **`0.0`**
 
 ## Example
-```java
-import fip.*;
+```javascript
+let layer,
+  bird,
+  cannyEdgeDetection;
 
-PShader cannyEdgeDetection;
-PImage ireland;
-
-void setup() {
-  size(1000, 1000, P3D);
-
-  cannyEdgeDetection = loadShader("cannyEdgeDetection.glsl");
-
-  ireland = loadImage("ireland.jpg");
-
-  cannyEdgeDetection.set("thresholdLow", 0.1);
-  cannyEdgeDetection.set("thresholdHigh", 0.3);
+function preload() {
+    cannyEdgeDetection = createShader(fip.defaultVert, fip.cannyEdgeDetection); // Load the shader
+    bird = loadImage("bird.jpg");
 }
 
-void draw() {
-  image(ireland, 0, 0, width, height);
-
-  filter(cannyEdgeDetection);
+function setup() {
+    createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+}
+  
+function draw() {
+    background(0);
+    
+    // Draw an image to a framebuffer 
+    layer.begin();
+    clear();
+    scale(1, -1); // Flip the Y-axis to match the canvas (different coordinate system in framebuffer)
+    image(bird, -width / 2, -height / 2, width, height);
+    layer.end();
+    
+    // Apply the shader
+    shader(cannyEdgeDetection);
+    
+    // Set the shader uniforms
+    cannyEdgeDetection.setUniform("texture", layer.color); // Set the texture to apply the shader to
+    cannyEdgeDetection.setUniform('uTextureSize', [width, height]); // Set the size of the texture used
+    cannyEdgeDetection.setUniform('thresholdLow', 0.1);
+    cannyEdgeDetection.setUniform('thresholdHigh', 0.3);
+    rect(0, 0, width, height); // Draw a rectangle to apply the shader to
+    resetShader(); 
 }
 ```
