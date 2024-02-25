@@ -4,6 +4,9 @@
 ## What is it?
 p5.FIP is a library that allows you to add post-processing / image-processing effects to your p5.js sketch. 
 
+<iframe width="610" height="650" src="https://editor.p5js.org/prontopablo/full/2-UYUk2qP"></iframe>
+_Left and right arrow keys cycle filters, up and down arrow keys cycle images._
+
 ## Features
 - 44 Effects
 - Hardware Accelerated
@@ -11,10 +14,19 @@ p5.FIP is a library that allows you to add post-processing / image-processing ef
 
 ## Getting Started
 
+To use FIP you can include it in your index.html file:
+```html
+    <head>
+    <!-- ...-->
+    <script src="https://prontopablo.github.io/p5.FIP/assets/javascripts/p5.FIP.js"></script>
+    <!-- ...-->
+    </head>
+```
+
 The reference for each shader can be found in the sidebar of this website.
 
 ## Examples
-Example sketches are included in the [examples folder](https://github.com/prontopablo/p5.FIP/examples) on GitHub. 
+Example sketches can be found in this collection [here](https://editor.p5js.org/prontopablo/collections/MA4R8jvck) and they are also included in the [examples folder](https://github.com/prontopablo/p5.FIP/examples) on GitHub. 
 
 ## p5.js Library Guidelines
 In accordance with the [p5.js library guidelines](https://github.com/processing/p5.js/blob/main/contributor_docs/creating_libraries.md):
