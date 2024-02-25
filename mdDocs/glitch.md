@@ -1,37 +1,44 @@
-The RGB channels are separated and displaced, then original and glitched colors are mixed.
+The RGB channels are separated and displaced, then the original and glitched colors are mixed.
 
 ## Parameters
-`texture` **Texture**: The input texture to be filtered. Default: **`The entire canvas`**
+`texture` **Texture**: The input texture to be filtered. Default: **`undefined`**
 <br>
-`texOffset` **Vec2:** The offset used for sampling neighboring pixels. Default: **`(1.0 / width, 1.0 / height)`**
-<br>
-`resolution` **Vec2**: The resolution of the input texture. Default: **`vec2(1.0)`**
-<br>
-`mouse` **Vec2**: The position of the mouse pointer. Default: **`vec2(0.0)`**
+`glitchIntensity` **Float:**  Value to determine the intensity of the glitch effect. Default: **`0.0`**
 
 ## Example
-```java
-import fip.*;
+```javascript
+let layer,
+  bird,
+  glitch;
 
-PShader glitch;
-
-PImage ireland;
-
-void setup() {
-  size(1000, 1000, P3D);
-
-  glitch = loadShader("glitch.glsl");
-
-  ireland = loadImage("ireland.jpg");
-
-  glitch.set("resolution", width, height);
+function preload() {
+    glitch = createShader(fip.defaultVert, fip.glitch); // Load the shader
+    bird = loadImage("bird.jpg");
 }
 
-void draw() {
-  image(ireland, 0, 0, width, height);
-
-  glitch.set("mouse", float(mouseX), float(mouseY));
-  filter(glitch);
+function setup() {
+    createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
 }
-
+  
+function draw() {
+    background(0);
+    
+    // Draw an image to a framebuffer 
+    layer.begin();
+    clear();
+    scale(1, -1); // Flip the Y-axis to match the canvas (different coordinate system in framebuffer)
+    image(bird, -width / 2, -height / 2, width, height);
+    layer.end();
+    
+    // Apply the shader
+    shader(glitch);
+    
+    // Set the shader uniforms
+    glitch.setUniform("texture", layer.color); // Set the texture to apply the shader to
+    glitch.setUniform('glitchIntensity', 0.8);
+    
+    rect(0, 0, width, height); // Draw a rectangle to apply the shader to
+    resetShader(); 
+}
 ```

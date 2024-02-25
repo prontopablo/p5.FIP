@@ -36,7 +36,7 @@ Example sketches can be found in this collection [here](https://editor.p5js.org/
 ## p5.js Library Guidelines
 In accordance with the [p5.js library guidelines](https://github.com/processing/p5.js/blob/main/contributor_docs/creating_libraries.md):
 
-1. FIP has no dependencies.
+1. p5.FIP has no dependencies.
 3. [Examples](https://github.com/prontopablo/p5.FIP/tree/main/examples) are included.
 4. [Source Code](https://github.com/prontopablo/p5.FIP/)
 5. Keywords: _image-processing, post-processing, filters_.

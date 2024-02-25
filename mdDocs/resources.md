@@ -1,4 +1,4 @@
-As I've developed FIP I've realised there is a lack of documentation for Processing shaders. Below is a list of useful resources grouped by category.
+As I've developed p5.FIP I've realised there is a lack of documentation for p5.js and Processing shaders. Below is a list of useful resources grouped by category.
 
 ## Learning about Processing shaders
 - If you're writing shaders for Processing, I would highly recommend [this archived tutorial](https://web.archive.org/web/20210117181532/https://processing.org/tutorials/pshader/). 
