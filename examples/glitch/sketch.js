@@ -3,12 +3,12 @@
 */
 
 let layer,
-  ireland,
+  bird,
   glitch;
 
 function preload() {
     glitch = createShader(fip.defaultVert, fip.glitch); // Load the glitch shader
-    ireland = loadImage("../images/ireland.jpg");
+    bird = loadImage("../images/bird.jpg");
 }
 
 function setup() {
@@ -23,7 +23,7 @@ function draw() {
     layer.begin();
     clear();
     scale(1, -1); // Flip the Y-axis to match the canvas (different coordinate system in framebuffer)
-    image(ireland, -width / 2, -height / 2, width, height);
+    image(bird, -width / 2, -height / 2, width, height);
     layer.end();
     
     // Apply the shader
