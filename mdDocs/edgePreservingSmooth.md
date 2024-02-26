@@ -9,7 +9,7 @@ Applies an edge-preserving filter to the input texture, emphasizing edges while 
 
 
 ## Example
-```javascript
+```javascript hl_lines="29 30 31"
 let layer,
   bird,
   edgePreservingSmooth;
@@ -21,7 +21,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
 }
   
 function draw() {

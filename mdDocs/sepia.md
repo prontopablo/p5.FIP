@@ -4,7 +4,7 @@ Converts the input image to a sepia-toned version using a specific color transfo
 `texture` **Texture**: The input texture to be filtered. Default: **`undefined`**
 
 ## Example
-```javascript
+```javascript hl_lines="29"
 let layer,
   bird,
   sepia;
@@ -16,7 +16,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
 }
   
 function draw() {

@@ -14,7 +14,7 @@ Recreates the effects of an old CRT television with visible scanlines, spherical
 `distortion` **Float:** Controls the amount of spherical warping. Default: **`0.0`**
 
 ## Example
-```javascript
+```javascript hl_lines="29 30 31 32 33 34"
 let layer,
   bird,
   crt;
@@ -26,7 +26,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
 }
   
 function draw() {
@@ -49,6 +49,7 @@ function draw() {
     crt.setUniform('scanlineWeight', 0.1);
     crt.setUniform('brightness', 2.5);
     crt..setUniform('distortion', 0.02);
+    
     rect(0, 0, width, height); // Draw a rectangle to apply the shader to
     resetShader(); 
 }

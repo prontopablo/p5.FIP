@@ -6,7 +6,7 @@ Dilates the input image to increase light areas. Samples surrounding pixels and 
 `resolution` **Vec2**: The resolution of the input texture. Default: **`undefined`**
 
 ## Example
-```javascript
+```javascript hl_lines="29 30"
 let layer,
   bird,
   dilate;
@@ -18,7 +18,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
 }
   
 function draw() {

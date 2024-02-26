@@ -8,7 +8,7 @@ Performs edge detection on the input texture using the Sobel operator. It calcul
 `threshold` **Float:** The threshold value to determine the intensity at which edges are detected. Default: **`0.0`**
 
 ## Example
-```javascript
+```javascript hl_lines="29 30 31"
 let layer,
   bird,
   sobelEdgeDetection;
@@ -20,7 +20,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
 }
   
 function draw() {

@@ -15,7 +15,7 @@ _Left and right arrow keys cycle filters, up and down arrow keys cycle images._
 ## Getting Started
 
 To use p5.FIP you can include it in your index.html file:
-```html
+```html hl_lines="3"
     <head>
     <!-- ...-->
     <script src="https://prontopablo.github.io/p5.FIP/assets/javascripts/p5.FIP.js"></script>
@@ -23,7 +23,7 @@ To use p5.FIP you can include it in your index.html file:
     </head>
 ```
 Alternatively you can download the p5.FIP.js file from [releases](https://github.com/prontopablo/p5.FIP/releases) and bring it into your project files:
-``` html
+``` html hl_lines="3"
     <head>
     <!-- ...-->
     <script src="p5.FIP.js"></script>
@@ -43,7 +43,7 @@ In accordance with the [p5.js library guidelines](https://github.com/processing/
 3. [Examples](https://github.com/prontopablo/p5.FIP/tree/main/examples) are included.
 4. [Source Code](https://github.com/prontopablo/p5.FIP/)
 5. Keywords: _image-processing, post-processing, filters_.
-6. Last update: 25/02/24.
+6. Last update: 26/02/24.
 
 ## Contributing
 I welcome contributions from the community to make p5.FIP better. If you have any suggestions, bug fixes, or new features to add, feel free to create a [pull request](https://github.com/prontopablo/p5.FIP/pulls).

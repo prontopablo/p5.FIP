@@ -6,7 +6,7 @@ Applies a threshold to a texture, converting it to a binary black and white imag
 `threshold` **Float:** The threshold value that determines the cutoff point. Pixels with grayscale values above this threshold will be set to white, and those below will be set to black. Default: **`0.0`**
 
 ## Example
-```javascript
+```javascript hl_lines="29 30"
 let layer,
   bird,
   threshold;
@@ -18,7 +18,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
 }
   
 function draw() {

@@ -10,7 +10,7 @@ Adds a glow effect using a combination of blurring and blending techniques.
 `glow` **Float:** The extent of the glow, controlled by the blur radius. Should be within the range [0.0, 8.0]. Default: **`0.0`**
 
 ## Example
-```javascript
+```javascript hl_lines="29 30 31 32"
 let layer,
   bird,
   bloom;
@@ -22,7 +22,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
 }
   
 function draw() {

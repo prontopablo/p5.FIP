@@ -10,7 +10,7 @@ Combines Sobel operator for edge detection and stippling. The Sobel operator cal
 `stippleDensity` **Float:** The density of stippling dots to be added to the ink effect. A lower value results in more dots. Default: **`0.0`**
 
 ## Example
-```javascript
+```javascript hl_lines="29 30 31 32"
 let layer,
   bird,
   static;
@@ -22,7 +22,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
 }
   
 function draw() {

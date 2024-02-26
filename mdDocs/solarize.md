@@ -6,7 +6,7 @@ Inverts colors based on the intensity of pixel colors. If the average intensity 
 `threshold` **Float:** The intensity threshold above which colors will be inverted. Ranges from 0.0 to 1.0. Default: **`0.0`**
 
 ## Example
-```javascript
+```javascript hl_lines="29 30"
 let layer,
   bird,
   solarize;
@@ -18,7 +18,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
 }
   
 function draw() {

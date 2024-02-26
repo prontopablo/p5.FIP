@@ -6,7 +6,7 @@ Adds a cartoon effect by emphasizing edges and darkening them.
 `edgeThreshold` **Float:** The threshold value that determines whether a pixel is considered an edge pixel based on the difference between the center pixel and its neighbors. Default: **`0.0`**
 
 ## Example
-```javascript
+```javascript hl_lines="29 30"
 let layer,
   bird,
   cartoon;
@@ -18,7 +18,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
 }
   
 function draw() {

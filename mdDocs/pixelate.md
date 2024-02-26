@@ -6,7 +6,7 @@ Pixelates an image by rounding each pixel to a fixed grid based on the specified
 `pixelSize` **Float:** The size of each pixel in the pixel grid. Default: **`0.0`**
 
 ## Example
-```javascript
+```javascript hl_lines="29 30"
 let layer,
   bird,
   pixelate;
@@ -18,7 +18,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
 }
   
 function draw() {

@@ -8,7 +8,7 @@ Applies a two-tone color effect.
 `tone2` **Vec2**: The RGB values of the second tone. Default: **`(0.0, 0.0, 0.0)`**
 
 ## Example
-```javascript
+```javascript hl_lines="29 30 31"
 let layer,
   bird,
   duoTone;
@@ -20,7 +20,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
 }
   
 function draw() {

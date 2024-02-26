@@ -6,7 +6,7 @@ Adjusts the saturation of an input texture. It operates by converting the origin
 `saturation` **Float:** Controls the saturation of the image. A value of 0.0 results in a grayscale image, while higher values increase saturation. Default: **`0.0`**
 
 ## Example
-```javascript
+```javascript hl_lines="29 30"
 let layer,
   bird,
   saturation;
@@ -18,7 +18,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
 }
   
 function draw() {

@@ -10,7 +10,7 @@ Detects edges using the Canny edge detection algorithm.
 `thresholdHigh` **Float:** The higher threshold for edge detection. Pixels with intensity gradients above this threshold will be considered strong edges. Default: **`0.0`**
 
 ## Example
-```javascript
+```javascript hl_lines="29 30 31 32"
 let layer,
   bird,
   cannyEdgeDetection;
@@ -22,7 +22,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
 }
   
 function draw() {
@@ -43,6 +43,7 @@ function draw() {
     cannyEdgeDetection.setUniform('uTextureSize', [width, height]); // Set the size of the texture used
     cannyEdgeDetection.setUniform('thresholdLow', 0.1);
     cannyEdgeDetection.setUniform('thresholdHigh', 0.3);
+
     rect(0, 0, width, height); // Draw a rectangle to apply the shader to
     resetShader(); 
 }

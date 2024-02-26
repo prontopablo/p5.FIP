@@ -9,8 +9,8 @@ Simulates a linocut effect by converting the input image to grayscale and applyi
 <br>
 `paperColor` **Vec3**: The color of the paper. This is a RGB vector, where each component is in the range [0, 1]. Default: **`(0.0, 0.0, 0.0)`**
 
-## Example
-```javascript
+## Example 
+```javascript hl_lines="29 30 31 32"
 let layer,
   bird,
   linocut;
@@ -22,7 +22,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
 }
   
 function draw() {

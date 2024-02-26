@@ -29,7 +29,7 @@ Blends textures together based on a mix factor and blending type.
 | Default       | Linear Interpolation        |
 
 ## Example
-```javascript
+```javascript hl_lines="41 42 43 44 45"
 let layer,
   bird,
   ireland,
@@ -43,7 +43,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer1 = createFramebuffer(); // Create framebuffers to draw the image onto (faster p5.js version of createGraphics())
+    layer1 = createFramebuffer(); // Create framebuffers to draw the image onto
     layer2 = createFramebuffer(); 
 }
   

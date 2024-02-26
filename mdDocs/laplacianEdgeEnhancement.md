@@ -8,7 +8,7 @@ Enhances image details by emphasizing edges through Laplacian filtering.
 `amount` **Float:** Controls the strength of the enhancement. Higher values result in more pronounced edges. Default: **`0.0`**
 
 ## Example
-```javascript
+```javascript hl_lines="29 30 31"
 let layer,
   bird,
   laplacianEdgeEnhancement;
@@ -20,7 +20,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
 }
   
 function draw() {
