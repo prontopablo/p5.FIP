@@ -975,7 +975,6 @@ const fip = {
         precision highp float;
         varying vec2 vTexCoord;
         uniform sampler2D texture;
-        uniform vec2 uTextureSize;
         uniform float threshold;
         uniform vec3 inkColor;
         uniform vec3 paperColor;
@@ -1233,7 +1232,6 @@ const fip = {
         varying vec2 vTexCoord;
         uniform sampler2D texture;
         uniform vec2 uTextureSize;
-        uniform vec2 resolution;
         uniform float threshold;
         
         void main() {

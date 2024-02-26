@@ -1,34 +1,47 @@
 Performs edge detection on the input texture using the Sobel operator. It calculates the intensity gradients in the horizontal and vertical directions and combines them to detect edges. 
 
 ## Parameters
-`texture` **Texture**: The input texture to be filtered. Default: **`The entire canvas`**
+`texture` **Texture**: The input texture to be filtered. Default: **`undefined`**
 <br>
-`texOffset` **Vec2:** The offset used for sampling neighboring pixels. Default: **`(1.0 / width, 1.0 / height)`**
+`uTextureSize` **Vec2:** The size of the texture used for sampling neighboring pixels. Default: **`(0.0, 0.0)`**
 <br>
-`threshold` **Float:** The threshold value to determine the intensity at which edges are detected. Default: **`0.2`**
+`threshold` **Float:** The threshold value to determine the intensity at which edges are detected. Default: **`0.0`**
 
 ## Example
-```java
-import fip.*;
+```javascript
+let layer,
+  bird,
+  sobelEdgeDetection;
 
-PShader sobelEdgeDetection;
-
-PImage ireland;
-
-void setup() {
-  size(1000, 1000, P3D);
-
-  sobelEdgeDetection = loadShader("sobelEdgeDetection.glsl");
-
-  ireland = loadImage("ireland.jpg");
-
-  sobelEdgeDetection.set("threshold", 0.2);
+function preload() {
+    sobelEdgeDetection = createShader(fip.defaultVert, fip.sobelEdgeDetection); // Load the shader
+    bird = loadImage("bird.jpg");
 }
 
-void draw() {
-  image(ireland, 0, 0, width, height);
-
-  filter(sobelEdgeDetection);
+function setup() {
+    createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
 }
+  
+function draw() {
+    background(0);
+    
+    // Draw an image to a framebuffer 
+    layer.begin();
+    clear();
+    scale(1, -1); // Flip the Y-axis to match the canvas (different coordinate system in framebuffer)
+    image(bird, -width / 2, -height / 2, width, height);
+    layer.end();
+    
+    // Apply the shader
+    shader(sobelEdgeDetection);
+    
+    // Set the shader uniforms
+    sobelEdgeDetection.setUniform("texture", layer.color); // Set the texture to apply the shader to
+    sobelEdgeDetection.setUniform('uTextureSize', [width, height]);
+    sobelEdgeDetection.setUniform('threshold', 0.2);
 
+    rect(0, 0, width, height); // Draw a rectangle to apply the shader to
+    resetShader(); 
+}
 ```

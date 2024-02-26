@@ -1,43 +1,51 @@
 Creates a ripple effect using sine function.
 
 ## Parameters
-`texture` **Texture**: The input texture to be filtered. Default: **`The entire canvas`**
+`texture` **Texture**: The input texture to be filtered. Default: **`undefined`**
 <br>
-`resolution` **Vec2**: The resolution of the input texture. Default: **`vec2(1.0)`**
+`resolution` **Vec2**: The resolution of the input texture. Default: **`vec2(0.0)`**
 <br>
-`rippleFrequency` **Float:** The frequency of the ripples. Default: **`50.0`**
+`rippleFrequency` **Float:** The frequency of the ripples. Default: **`0.0`**
 <br>
-`rippleAmplitude` **Float:** The amplitude or strength of the ripples. Default: **`0.01`**
-<br>
-`rippleCenterOffset` **Vec2**: The offset of the ripple center from the center of the screen. Default: **`vec2(0.0)`**
+`rippleAmplitude` **Float:** The amplitude or strength of the ripples. Default: **`0.0`**
 
 
 ## Example
-```java
-import fip.*;
+```javascript
+let layer,
+  bird,
+  ripple;
 
-PShader ripple;
-
-PImage ireland;
-
-void setup() {
-  size(1000, 1000, P3D);
-
-  ripple = loadShader("ripple.glsl");
-
-  ireland = loadImage("ireland.jpg");
-
-  ripple.set("resolution", width, height);
-  ripple.set("rippleFrequency", 50.0);
-  ripple.set("rippleAmplitude", 0.01);
-  ripple.set("rippleCenterOffset", 0.0, 0.0);
-
+function preload() {
+    ripple = createShader(fip.defaultVert, fip.ripple); // Load the shader
+    bird = loadImage("bird.jpg");
 }
 
-void draw() {
-  image(ireland, 0, 0, width, height);
-
-  filter(ripple);
+function setup() {
+    createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
 }
+  
+function draw() {
+    background(0);
+    
+    // Draw an image to a framebuffer 
+    layer.begin();
+    clear();
+    scale(1, -1); // Flip the Y-axis to match the canvas (different coordinate system in framebuffer)
+    image(bird, -width / 2, -height / 2, width, height);
+    layer.end();
+    
+    // Apply the shader
+    shader(ripple);
+    
+    // Set the shader uniforms
+    ripple.setUniform("texture", layer.color); // Set the texture to apply the shader to
+    ripple.setUniform('resolution', [width, height]);
+    ripple.setUniform('rippleFrequency', 50.0);
+    ripple.setUniform('rippleAmplitude', 0.01);
 
+    rect(0, 0, width, height); // Draw a rectangle to apply the shader to
+    resetShader(); 
+}
 ```

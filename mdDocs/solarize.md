@@ -1,34 +1,44 @@
 Inverts colors based on the intensity of pixel colors. If the average intensity of a pixel's color is above a specified threshold, the colors are inverted, creating a solarization effect.
 
 ## Parameters
-`texture` **Texture**: The input texture to be filtered. Default: **`The entire canvas`**
+`texture` **Texture**: The input texture to be filtered. Default: **`undefined`**
 <br>
-`resolution` **Vec2**: The resolution of the input texture. Default: **`vec2(1.0)`**
-<br>
-`threshold` **Float:** The intensity threshold above which colors will be inverted. Ranges from 0.0 to 1.0. Default: **`0.5`**
+`threshold` **Float:** The intensity threshold above which colors will be inverted. Ranges from 0.0 to 1.0. Default: **`0.0`**
 
 ## Example
-```java
-import fip.*;
+```javascript
+let layer,
+  bird,
+  solarize;
 
-PShader solarize;
-
-PImage ireland;
-
-void setup() {
-  size(1000, 1000, P3D);
-
-  solarize = loadShader("solarize.glsl");
-
-  ireland = loadImage("ireland.jpg");
-
-  solarize.set("threshold", 0.5);
+function preload() {
+    solarize = createShader(fip.defaultVert, fip.solarize); // Load the shader
+    bird = loadImage("bird.jpg");
 }
 
-void draw() {
-  image(ireland, 0, 0, width, height);
-
-  filter(solarize);
+function setup() {
+    createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
 }
-
+  
+function draw() {
+    background(0);
+    
+    // Draw an image to a framebuffer 
+    layer.begin();
+    clear();
+    scale(1, -1); // Flip the Y-axis to match the canvas (different coordinate system in framebuffer)
+    image(bird, -width / 2, -height / 2, width, height);
+    layer.end();
+    
+    // Apply the shader
+    shader(solarize);
+    
+    // Set the shader uniforms
+    solarize.setUniform("texture", layer.color); // Set the texture to apply the shader to
+    solarize.setUniform("threshold", 0.5);
+    
+    rect(0, 0, width, height); // Draw a rectangle to apply the shader to
+    resetShader(); 
+}
 ```

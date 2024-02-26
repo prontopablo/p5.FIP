@@ -1,34 +1,44 @@
 Rotates an input texture based on a specified rotation angle in degrees. It ensures that the resulting rotated coordinates are within the texture bounds. If the rotated coordinates fall outside the bounds, the pixel becomes transparent. 
 
 ## Parameters
-`texture` **Texture**: The input texture to be filtered. Default: **`The entire canvas`**
+`texture` **Texture**: The input texture to be filtered. Default: **`undefined`**
 <br>
-`texOffset` **Vec2:** The offset used for sampling neighboring pixels. Default: **`(1.0 / width, 1.0 / height)`**
-<br>
-`rotationAngleDegrees` **Float:** Rotation angle in degrees. Default: **`45.0`**
+`rotationAngleDegrees` **Float:** Rotation angle in degrees. Default: **`0.0`**
 
 ## Example
-```java
-import fip.*;
+```javascript
+let layer,
+  bird,
+  rotate;
 
-PShader rotate;
-
-PImage ireland;
-
-void setup() {
-  size(1000, 1000, P3D);
-
-  rotate = loadShader("rotate.glsl");
-
-  ireland = loadImage("ireland.jpg");
-
-  rotate.set("rotationAngleDegrees", 45.0);
+function preload() {
+    rotate = createShader(fip.defaultVert, fip.rotate); // Load the shader
+    bird = loadImage("bird.jpg");
 }
 
-void draw() {
-  image(ireland, 0, 0, width, height);
-
-  filter(rotate);
+function setup() {
+    createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
+    layer = createFramebuffer(); // Create a framebuffer to draw the image onto (faster p5.js version of createGraphics())
 }
-
+  
+function draw() {
+    background(0);
+    
+    // Draw an image to a framebuffer 
+    layer.begin();
+    clear();
+    scale(1, -1); // Flip the Y-axis to match the canvas (different coordinate system in framebuffer)
+    image(bird, -width / 2, -height / 2, width, height);
+    layer.end();
+    
+    // Apply the shader
+    shader(rotate);
+    
+    // Set the shader uniforms
+    rotate.setUniform("texture", layer.color); // Set the texture to apply the shader to
+    rotate.setUniform("rotationAngle", -45);
+    
+    rect(0, 0, width, height); // Draw a rectangle to apply the shader to
+    resetShader(); 
+}
 ```
