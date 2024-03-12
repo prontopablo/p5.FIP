@@ -7,8 +7,12 @@ plugins:
 repo_url: https://github.com/prontopablo/p5.FIP
 
 extra:
-  generator: false
+  social:
+  - icon: fontawesome/brands/github
+    link: https://github.com/prontopablo
   homepage: index.html
+
+copyright: p5.FIP is maintained by prontopablo. MIT Licence. 
 
 markdown_extensions:
   - toc:
@@ -28,6 +32,7 @@ theme:
     - navigation.path
     - navigation.instant.preview
     - navigation.expand
+    - navigation.footer
     - content.code.copy
     - search.suggest
   icon:
