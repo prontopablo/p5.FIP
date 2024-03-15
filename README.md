@@ -1,8 +1,15 @@
 ## p5.FIP (Fast Image Processing)
-> Real-time post-processing library for [p5.js](https://p5js.org/).
+> Real-time image processing library for [p5.js](https://p5js.org/).
 
 ## What is it?
-p5.FIP is a library that allows you to add post-processing / image-processing effects to your p5.js sketch. 
+p5.FIP is a library that allows you to add image processing/post-processing effects to your p5.js sketch. In 5 lines of code you can add effects like bloom, glitching, cartoon shading and many more.
+
+
+<div style="display: flex; justify-content: center">
+        <div>
+        <img width="400" height="400" src="./examples/images/p5.FIPLogo.jpg">
+        </div>
+</div>
 
 ## Features
 - 44 Effects
@@ -11,7 +18,7 @@ p5.FIP is a library that allows you to add post-processing / image-processing ef
 
 ## Getting Started
 
-To use FIP you can include it in your index.html file:
+To use p5.FIP you can include it in your index.html file:
 ```html
     <head>
     <!-- ...-->
@@ -38,14 +45,14 @@ In accordance with the [p5.js library guidelines](https://github.com/processing/
 
 1. p5.FIP has no dependencies.
 3. [Examples](https://github.com/prontopablo/p5.FIP/tree/main/examples) are included.
-4. [Source Code](https://github.com/prontopablo/p5.FIP/)
+4. p5.FIP is open source.
 5. Keywords: _image-processing, post-processing, filters_.
-6. Last update: 26/02/24.
+6. Last update: 15/03/24.
 
 ## Contributing
 I welcome contributions from the community to make p5.FIP better. If you have any suggestions, bug fixes, or new features to add, feel free to create a [pull request](https://github.com/prontopablo/p5.FIP/pulls).
 
 ## Acknowledgments
-Many of these shaders were adapted from existing solutions in other programming languages, in these cases, the links to the original shaders can be found at the top of each .glsl file.
+Many of these shaders were adapted from existing solutions in other programming languages, in these cases, the links to the original shaders or tutorials followed can be found at the top of each shader.
 
 A list of existing Processing image processing libraries can be found [here](https://prontopablo.github.io/p5.FIP/resources).
