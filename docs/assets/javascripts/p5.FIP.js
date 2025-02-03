@@ -452,38 +452,6 @@ const fip = {
     dithering:
     `
         precision highp float;
-        varying vec2 vTexCoord;
-        uniform sampler2D tex0;
-        uniform float threshold;
-
-
-        void main() {
-            vec2 tc = vTexCoord.st;
-            
-            // Sample the original color
-            vec4 originalColor = texture2D(tex0, tc);
-            
-            // Convert the color to grayscale
-            float gray = dot(originalColor.rgb, vec3(0.299, 0.587, 0.114));
-            
-            // Use a simple 2x2 Bayer matrix for dithering
-            int row = int(mod(gl_FragCoord.y, 2.0));
-            int col = int(mod(gl_FragCoord.x, 2.0));
-            float ditherValue = 0.25 * float(row * 2 + col);
-            
-            // Add the dithering error
-            gray += ditherValue;
-
-            // Threshold the grayscale value
-            vec4 ditheredColor = step(threshold, gray) * vec4(1.0, 1.0, 1.0, 1.0);
-
-            // Output the dithered color
-            gl_FragColor = ditheredColor;
-        }
-    `,
-    dot:
-    `
-       precision highp float;
 
         varying vec2 vTexCoord;
         uniform sampler2D tex0;
@@ -521,6 +489,38 @@ const fip = {
             // Apply dithering to the grayscale value with a random noise component
             gray = gray * circularPattern;  // Use the circular pattern to mask the gray value
             gl_FragColor = dither(gray, tc);  // Apply dithering based on the gray value
+        }
+    `,
+    dot:
+    `
+        precision highp float;
+        varying vec2 vTexCoord;
+        uniform sampler2D tex0;
+        uniform float dotSize;
+
+
+        void main() {
+            vec2 tc = vTexCoord.st;
+            
+            vec4 color = texture2D(tex0, tc);
+
+            // Calculate dot matrix coordinates
+            vec2 dotCoord = floor(tc / dotSize) * dotSize;
+
+            // Calculate the center of the dot
+            vec2 dotCenter = dotCoord + dotSize * 0.5;
+
+            // Calculate the distance from the current pixel to the dot center
+            float distanceToCenter = distance(tc, dotCenter);
+
+            // Use the distance to create a circular pattern
+            float circularPattern = smoothstep(0.0, 0.5, 1.0 - distanceToCenter / (dotSize * 0.5));
+
+            // Sample the color at dot matrix position with circular pattern
+            vec4 dotColor = texture2D(tex0, dotCoord) * circularPattern;
+
+            // Output the dot matrix color
+            gl_FragColor = dotColor;
         }
     `,
     duoTone:
