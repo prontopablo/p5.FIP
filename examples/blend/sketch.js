@@ -13,9 +13,11 @@ function setup() {
     createCanvas(600, 600, WEBGL); // Enable WEBGL mode for shaders
     
     blend = createFilterShader(fip.blend); // Load the blend shader
+    
     ireland = loadImage("ireland.jpg");
     bird = loadImage("bird.jpg");
     
+    // Create 2 framebuffers so we can control which textures are sent to the shaders
     layer1 = createFramebuffer();
     layer2 = createFramebuffer();
     
@@ -37,7 +39,8 @@ function draw() {
     // Apply the blend shader
     filter(blend);
     
-    blend.setUniform('texture1', layer1.color); // Blend
+    // Send our two textures to the shader
+    blend.setUniform('texture1', layer1.color);
     blend.setUniform('texture2', layer2.color);
     blend.setUniform("uTextureSize", [width, height]);
     blend.setUniform('mixFactor', 0.5);
