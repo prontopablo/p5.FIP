@@ -6,7 +6,7 @@
 */
 
 let layer, layer1, layer2;
-let currentShaderIndex = 38;
+let currentShaderIndex = 9;
 let currentImageIndex = 0;
 let images = [];
 let customShaders = [];
@@ -24,9 +24,12 @@ const shaderNames = [
   "Solarize", "Static", "Threshold", "Unsharp Masking", "Vignette"
 ];
 
-function preload() {
+function setup() {
+  createCanvas(600, 600, WEBGL);
+  
   // Load shaders from fip object (excluding default vertex shader)
   customShaders = Object.keys(fip)
+    .filter(key => key !== "defaultVert")
     .map(key => createFilterShader(fip[key]));
 
   // Load sample images
@@ -34,10 +37,7 @@ function preload() {
     loadImage("ireland.jpg"), 
     loadImage("bird.jpg")
   ];
-}
-
-function setup() {
-  createCanvas(600, 600, WEBGL);
+  
   layer = createFramebuffer();
   layer1 = createFramebuffer();
   layer2 = createFramebuffer();
@@ -47,30 +47,29 @@ function setup() {
 }
   
 function draw() {
-    background(0);
+  background(0);
     
-    // Render the current image to the main framebuffer. What you want to draw goes between begin and end)
-    layer.begin();
-    scale(1, -1);
-    image(images[currentImageIndex], -width / 2, -height / 2, width, height);
-    layer.end();
+  imageMode(CENTER);
+  image(images[currentImageIndex], 0, 0, width, height);
     
     // Handle special case for blend effects
     if (currentShaderIndex === 2) {
         layer1.begin();
-        scale(1, -1);
-        image(images[0], -width / 2, -height / 2, width, height);
+        image(images[0], 0, 0, width, height);
         layer1.end();
 
         layer2.begin();
-        scale(1, -1);
-        image(images[1], -width / 2, -height / 2, width, height);
+        image(images[1], 0, 0, width, height);
         layer2.end();
     }
 
     // Apply the selected shader
     let currentShader = customShaders[currentShaderIndex];  
     filter(currentShader);
+    
+    // Set common uniforms
+    // currentShader.setUniform("texture", layer.color);
+    // currentShader.setUniform("resolution", [width, height]);
   
     // Apply specific shader uniforms (play around with values here!)
     switch (currentShaderIndex) {
@@ -84,8 +83,10 @@ function draw() {
         case 2:
             currentShader.setUniform('texture1', layer1.color); // Blend
             currentShader.setUniform('texture2', layer2.color);
+            currentShader.setUniform("uTextureSize", [width, height]);
             currentShader.setUniform('mixFactor', 0.5);
             currentShader.setUniform('blendingMode', 0);
+            images
             break;
         case 3:
             currentShader.setUniform('intensity', 0.8); // Bloom
@@ -108,11 +109,7 @@ function draw() {
             currentShader.setUniform('contrast', 2.0); // Contrast
             break;
         case 9:
-            currentShader.setUniform('thresholdLow', 0.1); // CRT
-            currentShader.setUniform('thresholdHigh', 0.3);
-            currentShader.setUniform('scanlineWeight', 0.1);
-            currentShader.setUniform('brightness', 2.5);
-            currentShader.setUniform('distortion', 0.02);
+            currentShader.setUniform('time', millis() * 0.001); // CRT
             break;
         case 10:
             currentShader.setUniform('deformationAmount', 0.1); // Deform
@@ -122,7 +119,8 @@ function draw() {
             currentShader.setUniform('radius2', 2.0);
             break;
         case 13:
-            currentShader.setUniform('threshold', 1.0); // Dithering 
+            currentShader.setUniform('threshold', 0.3); // Dithering 
+            currentShader.setUniform('dotSize', 0.00001);
             break;
         case 14:
             currentShader.setUniform('dotSize', 0.008); // Dot
@@ -140,6 +138,9 @@ function draw() {
             break;
         case 20:
             currentShader.setUniform('gamma', 2.2); // Gamma
+            break;
+        case 21:
+            currentShader.setUniform('blurRadius', 5.0); // Gaussian Blur
             break;
         case 22:
             currentShader.setUniform('glitchIntensity', 0.8); // Glitch
@@ -180,7 +181,6 @@ function draw() {
             break;
         case 38:
             currentShader.setUniform('threshold', 0.2); // Sketch
-            currentShader.setUniform('stippleDensity', 0.99);
             break;
         case 39:
             currentShader.setUniform('threshold', 0.2); // Sobel Edge Detection
@@ -207,10 +207,6 @@ function draw() {
         default:
             break;
     }
-  
-    // Rectangle to cover the screen so we can apply our framebuffer
-    rect(0, 0, width, height);
-    resetShader(); // Reset the shader each frame
 }
 
 // Handle keyboard input to cycle shaders and images
