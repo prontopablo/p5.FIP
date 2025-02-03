@@ -347,19 +347,20 @@ const fip = {
             curvedUV -= 0.5;
             curvedUV += 0.5;
 
-            // Sample texture with curved UV
+            // Sample the original texture
             vec3 color = texture2D(tex0, curvedUV).rgb;
 
-            // Scanline effect
-            float scanline = 0.5 + 0.5 * sin((curvedUV.y * canvasSize.y * 3.14159 * 2.0) + time * 5.0);
-            color *= scanline;
+            // Scanline effect: creates a striped pattern
+            float scanlineFactor = sin(uv.y * canvasSize.y * 3.0 + time * 5.0);
+            scanlineFactor = smoothstep(0.4, 0.6, scanlineFactor); // Smoothing out scanlines
+            color *= scanlineFactor;  // Apply the scanline effect
 
-            // Slight chromatic aberration
-            float aberrationAmount = 0.001;
+            // Apply chromatic aberration (optional)
+            float aberrationAmount = 0.008;
             float r = color.r;
             float g = texture2D(tex0, curvedUV + vec2(aberrationAmount, 0.0)).g;
-            float b = color.b;
-            
+            float b = texture2D(tex0, curvedUV + vec2(aberrationAmount, 0.0)).b;
+
             gl_FragColor = vec4(r, g, b, 1.0);
         }
     `,
@@ -482,34 +483,44 @@ const fip = {
     `,
     dot:
     `
-        precision highp float;
+       precision highp float;
+
         varying vec2 vTexCoord;
         uniform sampler2D tex0;
         uniform float dotSize;
+        uniform float threshold;
 
+        vec4 dither(float gray, vec2 coords) {
+            // Generate a random value for dithering using coordinates
+            float noise = fract(sin(dot(coords.xy, vec2(12.9898, 78.233))) * 43758.5453);
+
+            // Apply dithering noise
+            gray += (noise - 0.5) * 0.1;  // Small dithering adjustment
+            return vec4(vec3(step(threshold, gray)), 1.0);
+        }
 
         void main() {
             vec2 tc = vTexCoord.st;
+
+            // Sample the original color from the texture
+            vec4 originalColor = texture2D(tex0, tc);
             
-            vec4 color = texture2D(tex0, tc);
+            // Convert the color to grayscale using the luminosity method
+            float gray = dot(originalColor.rgb, vec3(0.299, 0.587, 0.114));
 
-            // Calculate dot matrix coordinates
-            vec2 dotCoord = floor(tc / dotSize) * dotSize;
-
-            // Calculate the center of the dot
-            vec2 dotCenter = dotCoord + dotSize * 0.5;
-
-            // Calculate the distance from the current pixel to the dot center
+            // Create a grid-like structure based on the dotSize
+            vec2 dotCoord = floor(tc / dotSize) * dotSize;  // Grid position for dithering effect
+            vec2 dotCenter = dotCoord + dotSize * 0.5;  // Center of the current dot
+            
+            // Calculate the distance from the current fragment to the dot center
             float distanceToCenter = distance(tc, dotCenter);
 
-            // Use the distance to create a circular pattern
+            // Create a circular mask for each dot
             float circularPattern = smoothstep(0.0, 0.5, 1.0 - distanceToCenter / (dotSize * 0.5));
-
-            // Sample the color at dot matrix position with circular pattern
-            vec4 dotColor = texture2D(tex0, dotCoord) * circularPattern;
-
-            // Output the dot matrix color
-            gl_FragColor = dotColor;
+            
+            // Apply dithering to the grayscale value with a random noise component
+            gray = gray * circularPattern;  // Use the circular pattern to mask the gray value
+            gl_FragColor = dither(gray, tc);  // Apply dithering based on the gray value
         }
     `,
     duoTone:
