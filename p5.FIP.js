@@ -999,7 +999,7 @@ const fip = {
             gl_FragColor = color;
         }
     `,
-    moasic:
+    mosaic:
     `
         precision highp float;
         varying vec2 vTexCoord;
