@@ -64,7 +64,7 @@ function draw() {
 }  
 ```
 > [!IMPORTANT]  
-> The most recent release of p5.FIP changed how textures work. Now the entire canvas is the default texture. However, if we wanted to only pass a specific texture to our shader, such as an ellipse, we would need to put it inside a _PGraphics_ - see the [blur example](https://editor.p5js.org/prontopablo/sketches/AoeQAXAap) for details.
+> The most recent release of p5.FIP changed how textures work. Now the entire canvas is the default texture. However, if we wanted to only pass a specific texture to our shader, we could use a _framebuffer_ - see the [blend example](https://editor.p5js.org/prontopablo/sketches/AoeQAXAap) for details.
 
 ## Repository Structure
 - _p5.FIP.js:_ Shader code itself. This is where the actual functionality of the library is.
