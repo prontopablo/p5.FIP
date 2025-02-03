@@ -48,26 +48,23 @@ Example sketches can be found in this collection [here](https://editor.p5js.org/
 ```js
 let ireland, motionBlur;
 
-function preload() {
-    motionBlur = createShader(fip.defaultVert, fip.motionBlur); // Load the  motion blur shader
-    ireland = loadImage("ireland.jpg");
-}
-
 function setup() {
-    createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
+  createCanvas(600, 600, WEBGL); // Use WEBGL mode to use shaders
+  motionBlur = createFilterShader(fip.motionBlur); // Load the motion blur shader
+  ireland = loadImage("ireland.jpg");
 }
   
 function draw() {
-    background(0);
-
-    motionBlur.setUniform("texture", ireland); // Set the texture to apply the shader to
-    motionBlur.setUniform('uTextureSize', [width, height]); // Set the size of the texture
-
-    filter(motionBlur); // Apply the shader
+  background(255);
+  imageMode(CENTER);
+  image(ireland, 0, 0, width, height);
+    
+  // Apply the shader
+  filter(motionBlur);
 }  
 ```
 > [!IMPORTANT]  
-> We need to pass a texture to our shader. In the above example we can just pass the image as a texture. However, if we wanted to draw anything else, such as an ellipse, we would need to put it inside a _PGraphics_ - see the [blur example](https://editor.p5js.org/prontopablo/sketches/AoeQAXAap) for details.
+> The most recent release of p5.FIP changed how textures work. Now the entire canvas is the default texture. However, if we wanted to only pass a specific texture to our shader, such as an ellipse, we would need to put it inside a _PGraphics_ - see the [blur example](https://editor.p5js.org/prontopablo/sketches/AoeQAXAap) for details.
 
 ## Repository Structure
 - _p5.FIP.js:_ Shader code itself. This is where the actual functionality of the library is.

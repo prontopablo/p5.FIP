@@ -103,7 +103,7 @@ const fip = {
             gl_FragColor = resultColor;
         }
     `,
-    blend : `
+    blend: `
         precision highp float;
         varying vec2 vTexCoord;
         uniform sampler2D texture1;
