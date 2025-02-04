@@ -7,48 +7,48 @@ As p5.FIP runs GLSL shaders on the GPU, make sure you update to the latest graph
 ## Not passing textures
 Some shaders have required parameters and will not work if these parameters are not passed into them. Below we use the _blend_ shader but fail to pass it the textures we want to blend, so it does nothing.
 
-```javascript hl_lines="36 37"
-let layer1, layer2,
-  ireland,
-  bird,
-  blend;
-
-function preload() {
-    blend = createShader(fip.defaultVert, fip.blend);
-    ireland = loadImage("ireland.jpg");
-    bird = loadImage("bird.jpg");
-}
+```javascript hl_lines="31 32 33"
+let layer1, layer2, ireland, bird, blend, blendingModeIndex = 0;
 
 function setup() {
     createCanvas(600, 600, WEBGL);
+    
+    blend = createFilterShader(fip.blend);
+    
+    ireland = loadImage("ireland.jpg");
+    bird = loadImage("bird.jpg");
+    
     layer1 = createFramebuffer();
     layer2 = createFramebuffer();
+    
+    console.log("Press any key to cycle through blending modes.");
 }
   
 function draw() {
     background(0);
-
+    imageMode(CENTER);
+  
     layer1.begin();
-    clear();
-    scale(1, -1); 
-    image(ireland, -width / 2, -height / 2, width, height);
+    image(ireland, 0, 0, width, height);
     layer1.end();
 
     layer2.begin();
-    clear();
-    scale(1, -1);
-    image(bird, -width / 2, -height / 2, width, height);
+    image(bird, 0, 0, width, height);
     layer2.end();
     
-    shader(blend);
-
-    blend.setUniform('blendingMode', 0);
-    // blend.setUniform("texture1", layer1.color); - Blend requires 2 textures to be passed into it.
-    // blend.setUniform("texture2", layer2.color); 
-    blend.setUniform("mixFactor", 0.5);
-
-    rect(0, 0, width, height);
-    resetShader(); 
+    filter(blend);
+    
+    // We must send our two textures to the shader for blend to work!
+    // blend.setUniform('texture1', layer1.color);
+    // blend.setUniform('texture2', layer2.color);
+    blend.setUniform("uTextureSize", [width, height]);
+    blend.setUniform('mixFactor', 0.5);
+    blend.setUniform('blendingMode', blendingModeIndex);
+}
+  
+function keyPressed() {
+    blendingModeIndex = (blendingModeIndex + 1) % 14;
+    console.log("Blending Mode: " + blendingModeIndex);
 }
 ```
 

@@ -1,6 +1,8 @@
 ## p5.FIP (Fast Image Processing)
 > Real-time image processing library for [p5.js](https://p5js.org/).
 
+> [日本語チュートリアル。](https://qiita.com/youtoy/items/2b670ea176d9b126ae0d)
+
 ## What is it?
 p5.FIP is a library that allows you to add image processing/post-processing effects to your p5.js sketch. In 5 lines of code you can add effects like bloom, glitching, cartoon shading and many more.
 
@@ -43,7 +45,7 @@ In accordance with the [p5.js library guidelines](https://github.com/processing/
 3. [Examples](https://github.com/prontopablo/p5.FIP/tree/main/examples) are included.
 4. p5.FIP is open source. [Source Code](https://github.com/prontopablo/p5.FIP/).
 5. Keywords: _image-processing, post-processing, filters_.
-6. Last update: 15/03/24.
+6. Last update: 03/02/25.
 
 ## Contributing
 I welcome contributions from the community to make p5.FIP better. If you have any suggestions, bug fixes, or new features to add, feel free to create a [pull request](https://github.com/prontopablo/p5.FIP/pulls).

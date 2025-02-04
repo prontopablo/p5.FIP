@@ -1,45 +1,30 @@
 # Usage
 Once p5.FIP has been included in your index.html file, to use an effect: 
 
-1. Load the shader you want, using `createShader()`.
-2. In `createCanvas()`, use the WEBGL renderer ([Why?](https://p5js.org/reference/#/p5/shader)).
-3. Call `shader()`, passing in the shader name.
+1. In `createCanvas()`, use the WEBGL renderer ([Why?](https://p5js.org/reference/#/p5/shader)).
+2. Load the shader you want, using `createFilterShader()`.
+3. Call `filter()`, passing in the shader name.
 4. Set uniforms (parameters).
 
-```javascript hl_lines="6 11 26 29 30"
-let layer,
-  ireland,
-  glitch;
-
-function preload() {
-    glitch = createShader(fip.defaultVert, fip.glitch); // Load the glitch shader
-    ireland = loadImage("ireland.jpg");
-}
+```javascript hl_lines="4 5 15 18"
+let ireland, glitch;
 
 function setup() {
     createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer = createFramebuffer(); // Create a framebuffer to draw the image onto
+    glitch = createFilterShader(fip.glitch); // Load the glitch shader
+    ireland = loadImage("ireland.jpg");
 }
   
 function draw() {
-    background(0);
+  background(0);
+  imageMode(CENTER);
+  image(bird, 0, 0, width, height);
     
-    // Draw an image to a framebuffer 
-    layer.begin();
-    clear();
-    scale(1, -1); // Flip the Y-axis to match the canvas (different coordinate system in framebuffer)
-    image(ireland, -width / 2, -height / 2, width, height);
-    layer.end();
+  // Apply the shader
+  filter(glitch);
     
-    // Apply the shader
-    shader(glitch);
-    
-    // Set the shader uniforms
-    glitch.setUniform("texture", layer.color); // Set the texture to apply the shader to
-    glitch.setUniform('glitchIntensity', 0.8); // Set the intensity of the glitch effect
-
-    rect(0, 0, width, height); // Draw a rectangle to apply the shader to
-    resetShader(); 
+  // Set the shader uniforms
+  glitch.setUniform('glitchIntensity', 0.8); // Set the intensity of the glitch
 }
 ```
 

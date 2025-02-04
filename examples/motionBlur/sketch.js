@@ -18,6 +18,4 @@ function draw() {
     
   // Apply the shader
   filter(motionBlur);
-}  
-
-  
+}

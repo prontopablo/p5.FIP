@@ -29,55 +29,51 @@ Blends textures together based on a mix factor and blending type.
 | Default       | Linear Interpolation        |
 
 ## Example
-```javascript hl_lines="41 42 43 44 45"
-let layer,
-  bird,
-  ireland,
-  blend;
-
-function preload() {
-    blend = createShader(fip.defaultVert, fip.blend); // Load the shader
-    bird = loadImage("bird.jpg");
-    ireland = loadImage("ireland.jpg");
-}
+```javascript hl_lines="34 35 36 37 38"
+let layer1, layer2, ireland, bird, blend, blendingModeIndex = 0;
 
 function setup() {
-    createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
-    layer1 = createFramebuffer(); // Create framebuffers to draw the image onto
-    layer2 = createFramebuffer(); 
+    createCanvas(600, 600, WEBGL); // Enable WEBGL mode for shaders
+    
+    blend = createFilterShader(fip.blend); // Load the blend shader
+    
+    ireland = loadImage("ireland.jpg");
+    bird = loadImage("bird.jpg");
+    
+    // Create 2 framebuffers so we can control which textures are sent to the shaders
+    layer1 = createFramebuffer();
+    layer2 = createFramebuffer();
+    
+    console.log("Press any key to cycle through blending modes.");
 }
   
 function draw() {
     background(0);
-    
-    // Create a framebuffer for blending
+    imageMode(CENTER);
+  
     layer1.begin();
-    clear();
-    lights();
-    scale(1, -1);
-    image(images[0], -width / 2, -height / 2, width, height);
+    image(ireland, 0, 0, width, height);
     layer1.end();
-    
-    // Create a second framebuffer for blending
+
     layer2.begin();
-    clear();
-    lights();
-    scale(1, -1);
-    image(images[1], -width / 2, -height / 2, width, height);
+    image(bird, 0, 0, width, height);
     layer2.end();
     
-    // Apply the shader
-    shader(blend);
+    // Apply the blend shader
+    filter(blend);
     
-    // Set the shader uniforms
-    blend.setUniform("texture1", layer1.color); // First texture
-    blend.setUniform("texture2", layer2.color); // Second texture
-    blend.setUniform('uTextureSize', [width, height]); // Set the size of the texture used
+    // Send our two textures to the shader
+    blend.setUniform('texture1', layer1.color);
+    blend.setUniform('texture2', layer2.color);
+    blend.setUniform("uTextureSize", [width, height]);
     blend.setUniform('mixFactor', 0.5);
-    blend.setUniform('blendingMode', 0);
-
-    rect(0, 0, width, height); // Draw a rectangle to apply the shader to
-    resetShader(); 
+    blend.setUniform('blendingMode', blendingModeIndex);
+}
+  
+function keyPressed() {
+    // Cycle through blending modes when a key is pressed
+    blendingModeIndex = (blendingModeIndex + 1) % 14; // 14 types of blending
+    console.log("Blending Mode: " + blendingModeIndex);
 }
 ```
 

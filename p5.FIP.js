@@ -1,32 +1,19 @@
 const fip = {
-    defaultVert: `
-        precision highp float;
-        attribute vec3 aPosition;
-        attribute vec2 aTexCoord;
-        varying vec2 vTexCoord;
-        
-        void main() {
-            vec4 positionVec4 = vec4(aPosition, 1.0);
-            positionVec4.xy = positionVec4.xy * 2.0 - 1.0;
-            gl_Position = positionVec4;
-            vTexCoord = aTexCoord;
-        }
-    `,
     antiAliasing: `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 uTextureSize;
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
         uniform float strength;
         
         void main() { 
-            vec2 pixelSize = 1.0 / uTextureSize;
+            vec2 pixelSize = 1.0 / canvasSize;
         
             // Sample the center pixel
-            vec4 centerColor = texture2D(texture, vTexCoord.st);
+            vec4 centerColor = texture2D(tex0, vTexCoord.st);
         
             // Calculate the dynamic texOffset based on the texture size
-            vec2 texOffset = 1.0 / uTextureSize;
+            vec2 texOffset = 1.0 / canvasSize;
         
             // Define the offset for super-sampling
             vec2 offset = vec2(strength) * texOffset;
@@ -35,16 +22,16 @@ const fip = {
             vec4 sum = vec4(0.0);
             
             // Sample 1
-            sum += texture2D(texture, vTexCoord.st + offset);
+            sum += texture2D(tex0, vTexCoord.st + offset);
         
             // Sample 2
-            sum += texture2D(texture, vTexCoord.st + vec2(-offset.x, offset.y));
+            sum += texture2D(tex0, vTexCoord.st + vec2(-offset.x, offset.y));
         
             // Sample 3
-            sum += texture2D(texture, vTexCoord.st + vec2(offset.x, -offset.y));
+            sum += texture2D(tex0, vTexCoord.st + vec2(offset.x, -offset.y));
         
             // Sample 4
-            sum += texture2D(texture, vTexCoord.st - offset);
+            sum += texture2D(tex0, vTexCoord.st - offset);
         
             // Average the samples
             vec4 averagedColor = sum / 4.0;
@@ -55,7 +42,7 @@ const fip = {
     bilateral: `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float sigmaSpace; // Spatial standard deviation
         uniform float sigmaColor; // Color standard deviation
         
@@ -63,7 +50,7 @@ const fip = {
             vec2 tc = vTexCoord.st;
             
             // Sample the original color
-            vec4 centerColor = texture2D(texture, tc);
+            vec4 centerColor = texture2D(tex0, tc);
             
             // Convert to grayscale (luminance)
             float centerLuminance = dot(centerColor.rgb, vec3(0.2126, 0.7152, 0.0722));
@@ -78,7 +65,7 @@ const fip = {
                 vec2 offset = vec2(i, j) / 512.0; // Adjust the denominator based on your canvas size
             
                 // Sample the neighboring pixel
-                vec4 neighborColor = texture2D(texture, tc + offset);
+                vec4 neighborColor = texture2D(tex0, tc + offset);
             
                 // Convert neighbor color to grayscale (luminance)
                 float neighborLuminance = dot(neighborColor.rgb, vec3(0.2126, 0.7152, 0.0722));
@@ -103,7 +90,7 @@ const fip = {
             gl_FragColor = resultColor;
         }
     `,
-    blend: `
+    blend : `
         precision highp float;
         varying vec2 vTexCoord;
         uniform sampler2D texture1;
@@ -156,8 +143,8 @@ const fip = {
     bloom: `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 uTextureSize;
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
         uniform float intensity;
         uniform float glow;
         
@@ -165,10 +152,10 @@ const fip = {
             vec2 tc = vTexCoord.st;
             
             // Sample the original color
-            vec4 originalColor = texture2D(texture, tc);
+            vec4 originalColor = texture2D(tex0, tc);
             
             // Calculate the dynamic texOffset based on the texture size
-            vec2 texOffset = 1.0 / uTextureSize;
+            vec2 texOffset = 1.0 / canvasSize;
             
             // Blur the image
             vec4 blurredColor = vec4(0.0);
@@ -177,12 +164,12 @@ const fip = {
             float clampedGlow = clamp(glow, 0.0, 8.0);
             
             // Calculate the blur offset
-            vec2 blurOffset = vec2(clampedGlow / uTextureSize.x, 0.0);
+            vec2 blurOffset = vec2(clampedGlow / canvasSize.x, 0.0);
             
             // Accumulate blurred colors
             for (float i = -8.0; i <= 8.0; i += 1.0) {
                 vec2 offset = i * blurOffset;
-                blurredColor += texture2D(texture, vTexCoord.st + offset);
+                blurredColor += texture2D(tex0, vTexCoord.st + offset);
             }
             
             blurredColor /= 17.0;
@@ -200,8 +187,8 @@ const fip = {
     boxBlur: `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 uTextureSize;
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
         
         const int blurRadius = 3;
         
@@ -212,13 +199,13 @@ const fip = {
             vec4 sumColor = vec4(0.0);
             
             // Calculate the dynamic texOffset based on the texture size
-            vec2 texOffset = 1.0 / uTextureSize;
+            vec2 texOffset = 1.0 / canvasSize;
             
             // Iterate over the pixels in the blur radius
                 for (int i = -blurRadius; i <= blurRadius; i++) {
                     for (int j = -blurRadius; j <= blurRadius; j++) {
                         // Sample the color of the current pixel
-                        vec4 currentColor = texture2D(texture, tc + vec2(float(i), float(j)) * texOffset);
+                        vec4 currentColor = texture2D(tex0, tc + vec2(float(i), float(j)) * texOffset);
                         
                         // Accumulate the color
                         sumColor += currentColor;
@@ -235,7 +222,7 @@ const fip = {
     brightness: `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float brightness;
         
         
@@ -243,7 +230,7 @@ const fip = {
             vec2 tc = vTexCoord.st;
             
             // Sample the original color
-            vec4 color = texture2D(texture, tc);
+            vec4 color = texture2D(tex0, tc);
             
             // Adjust brightness
             color.rgb = color.rgb * brightness;
@@ -257,64 +244,55 @@ const fip = {
     cannyEdgeDetection: `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 uTextureSize;
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
         uniform float thresholdLow;
         uniform float thresholdHigh;
-        
+
         void main() {
-            vec2 tc = vTexCoord.st;
+            vec2 texOffset = 1.0 / canvasSize;
             
-            // Sample the original color
-            vec4 originalColor = texture2D(texture, tc);
+            // Sample surrounding pixels
+            float TL = texture2D(tex0, vTexCoord + texOffset * vec2(-1.0, -1.0)).r;
+            float TC = texture2D(tex0, vTexCoord + texOffset * vec2( 0.0, -1.0)).r;
+            float TR = texture2D(tex0, vTexCoord + texOffset * vec2( 1.0, -1.0)).r;
+            float CL = texture2D(tex0, vTexCoord + texOffset * vec2(-1.0,  0.0)).r;
+            float CC = texture2D(tex0, vTexCoord).r;
+            float CR = texture2D(tex0, vTexCoord + texOffset * vec2( 1.0,  0.0)).r;
+            float BL = texture2D(tex0, vTexCoord + texOffset * vec2(-1.0,  1.0)).r;
+            float BC = texture2D(tex0, vTexCoord + texOffset * vec2( 0.0,  1.0)).r;
+            float BR = texture2D(tex0, vTexCoord + texOffset * vec2( 1.0,  1.0)).r;
             
-            // Calculate the dynamic texOffset based on the texture size
-            vec2 texOffset = 1.0 / uTextureSize;
+            // Sobel filter for edge detection
+            float Gx = -TL - 2.0 * CL - BL + TR + 2.0 * CR + BR;
+            float Gy = -TL - 2.0 * TC - TR + BL + 2.0 * BC + BR;
             
-            // Sample the surrounding pixels
-            vec4 centerColor = texture2D(texture, tc);
-            vec4 leftColor = texture2D(texture, tc - texOffset);
-            vec4 rightColor = texture2D(texture, tc + texOffset);
-            vec4 topColor = texture2D(texture, tc - vec2(0.0, texOffset.t));
-            vec4 bottomColor = texture2D(texture, tc + vec2(0.0, texOffset.t));
-                
-            // Calculate the intensity gradients
-            float horizontalGradient = length(leftColor - rightColor);
-            float verticalGradient = length(topColor - bottomColor);
-                
-            // Combine gradients to detect edges
-            float edgeIntensity = sqrt(horizontalGradient * horizontalGradient + verticalGradient * verticalGradient);
-                
-            // Apply the threshold to highlight edges
-            vec4 edgeColor = edgeIntensity > thresholdLow ? vec4(1.0, 1.0, 1.0, 1.0) : vec4(0.0, 0.0, 0.0, 1.0);
-                
-            // Perform hysteresis to link edges
-            edgeColor = edgeColor * (edgeIntensity > thresholdHigh ? 1.0 : 0.0);
-                
-            // Output the edge-detected color
-            gl_FragColor = edgeColor;
+            float edgeMagnitude = length(vec2(Gx, Gy));
+            
+            // Apply thresholding
+            float edge = smoothstep(thresholdLow, thresholdHigh, edgeMagnitude);
+            
+            gl_FragColor = vec4(vec3(edge), 1.0);
         }
     `,	
     cartoon:
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float edgeThreshold;
-
-
 
         void main() {
             vec2 tc = vTexCoord.st;
             
             // Sample the center pixel color
-            vec4 centerColor = texture2D(texture, tc);
+            vec4 centerColor = texture2D(tex0, tc);
             
             // Sample the neighbors with slightly different texture coordinates
-            vec4 neighborColor1 = texture2D(texture, tc + vec2(0.01, 0.0));
-            vec4 neighborColor2 = texture2D(texture, tc - vec2(0.01, 0.0));
-            vec4 neighborColor3 = texture2D(texture, tc + vec2(0.0, 0.01));
-            vec4 neighborColor4 = texture2D(texture, tc - vec2(0.0, 0.01));
+            vec4 neighborColor1 = texture2D(tex0, tc + vec2(0.01, 0.0));
+            vec4 neighborColor2 = texture2D(tex0, tc - vec2(0.01, 0.0));
+            vec4 neighborColor3 = texture2D(tex0, tc + vec2(0.0, 0.01));
+            vec4 neighborColor4 = texture2D(tex0, tc - vec2(0.0, 0.01));
 
             // Calculate the average difference
             float delta = length(centerColor.rgb - (neighborColor1.rgb + neighborColor2.rgb + neighborColor3.rgb + neighborColor4.rgb) / 4.0);
@@ -333,7 +311,7 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float contrast;
         
         
@@ -341,7 +319,7 @@ const fip = {
             vec2 tc = vTexCoord.st;
             
             // Sample the original color
-            vec4 color = texture2D(texture, tc);
+            vec4 color = texture2D(tex0, tc);
             
             // Adjust contrast
             color.rgb = (color.rgb - 0.5) * contrast + 0.5;
@@ -355,67 +333,42 @@ const fip = {
     crt:
     `
         precision highp float;
+
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 resolution;
-        uniform float thresholdLow;
-        uniform float thresholdHigh;
-        uniform float scanlineWeight;
-        uniform float brightness;
-        uniform float distortion;
-        
+        uniform sampler2D tex0;
+        uniform float time;
+        uniform vec2 canvasSize;
+
         void main() {
-            vec2 tc = vTexCoord.st;
-        
-            // Center pixel
-            vec4 centerColor = texture2D(texture, tc);
-        
-            // Neighboring pixels
-            vec4 topColor = texture2D(texture, tc + vec2(0.0, 1.0) / resolution);
-            vec4 bottomColor = texture2D(texture, tc + vec2(0.0, -1.0) / resolution);
-            vec4 leftColor = texture2D(texture, tc + vec2(-1.0, 0.0) / resolution);
-            vec4 rightColor = texture2D(texture, tc + vec2(1.0, 0.0) / resolution);
-        
-            // Calculate the intensity gradients
-            float horizontalGradient = length(leftColor - rightColor);
-            float verticalGradient = length(topColor - bottomColor);
-            
-            // Combine gradients to detect edges
-            float edgeIntensity = sqrt(horizontalGradient * horizontalGradient + verticalGradient * verticalGradient);
-            
-            // Apply the threshold to highlight edges
-            vec4 edgeColor = edgeIntensity > thresholdLow ? vec4(1.0, 1.0, 1.0, 1.0) : vec4(0.0, 0.0, 0.0, 1.0);
-            
-            // Perform hysteresis to link edges
-            edgeColor = edgeColor * (edgeIntensity > thresholdHigh ? 1.0 : 0.0);
-            
-            // Apply scanlines effect
-            float offset = 0.002;
-            
-            // Calculate spherical warp
-            float distanceToCenter = length(tc - vec2(0.5, 0.5));
-            vec2 warpOffset = normalize(tc - vec2(0.5, 0.5)) * pow(distanceToCenter, 2.0) * distortion;
-            vec2 distortedUV = tc + sin(tc.y * 20.0) * offset + warpOffset;
-            
-            vec4 crtColor = texture2D(texture, distortedUV);
-            crtColor.rgb -= crtColor.rgb * smoothstep(0.5 - scanlineWeight, 0.5 + scanlineWeight, mod(gl_FragCoord.y, 2.0));
-        
-            // Adjust brightness
-            crtColor *= brightness;
-        
-            // Add a slight vignette effect
-            float vignetteFactor = 1.0 - 0.5 * pow(distanceToCenter, 2.0);
-            crtColor *= vignetteFactor;
-        
-            // Output the CRT-processed color
-            gl_FragColor = crtColor;
+            vec2 uv = vTexCoord;
+
+            // Curvature effect
+            vec2 curvedUV = uv;
+            curvedUV -= 0.5;
+            curvedUV += 0.5;
+
+            // Sample the original texture
+            vec3 color = texture2D(tex0, curvedUV).rgb;
+
+            // Scanline effect: creates a striped pattern
+            float scanlineFactor = sin(uv.y * canvasSize.y * 3.0 + time * 5.0);
+            scanlineFactor = smoothstep(0.4, 0.6, scanlineFactor); // Smoothing out scanlines
+            color *= scanlineFactor;  // Apply the scanline effect
+
+            // Apply chromatic aberration (optional)
+            float aberrationAmount = 0.008;
+            float r = color.r;
+            float g = texture2D(tex0, curvedUV + vec2(aberrationAmount, 0.0)).g;
+            float b = texture2D(tex0, curvedUV + vec2(aberrationAmount, 0.0)).b;
+
+            gl_FragColor = vec4(r, g, b, 1.0);
         }
     `,
     deform:
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float deformationAmount;
         
         
@@ -423,7 +376,7 @@ const fip = {
             vec2 tc = vTexCoord.st;
             
             // Sample the original color
-            vec4 color = texture2D(texture, tc);
+            vec4 color = texture2D(tex0, tc);
             
             // Calculate deformation
             vec2 deform = vec2(sin(tc.y * 10.0) * deformationAmount, 0.0);
@@ -432,7 +385,7 @@ const fip = {
             tc += deform;
             
             // Sample the deformed pixel color
-            vec4 deformedColor = texture2D(texture, tc);
+            vec4 deformedColor = texture2D(tex0, tc);
             
             // Output the deformed color
             gl_FragColor = deformedColor;
@@ -442,8 +395,8 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform vec2 resolution;
-        uniform sampler2D texture;
+        uniform vec2 canvasSize;
+        uniform sampler2D tex0;
         uniform float radius1;
         uniform float radius2;
         
@@ -451,14 +404,14 @@ const fip = {
             vec2 tc = vTexCoord.st;
             
             // Sample the original color
-            vec4 centerColor = texture2D(texture, tc);
+            vec4 centerColor = texture2D(tex0, tc);
             
             // Calculate the DoG filter values
             float sigma1 = radius1 / 3.0;
             float sigma2 = radius2 / 3.0;
             
-            vec4 blurred1 = texture2D(texture, tc - vec2(1.5) / resolution.xy);
-            vec4 blurred2 = texture2D(texture, tc + vec2(1.5) / resolution.xy);
+            vec4 blurred1 = texture2D(tex0, tc - vec2(1.5) / canvasSize.xy);
+            vec4 blurred2 = texture2D(tex0, tc + vec2(1.5) / canvasSize.xy);
             
             float intensity1 = dot(blurred1.rgb, vec3(0.2126, 0.7152, 0.0722));
             float intensity2 = dot(blurred2.rgb, vec3(0.2126, 0.7152, 0.0722));
@@ -474,20 +427,20 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 resolution;
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
 
 
         void main() {
             vec2 tc = vTexCoord.st;
             
             // Center pixel
-            vec4 centerColor = texture2D(texture, tc);
+            vec4 centerColor = texture2D(tex0, tc);
             // Neighboring pixels
-            vec4 leftColor = texture2D(texture, tc + vec2(-1.0, 0.0) / resolution);
-            vec4 rightColor = texture2D(texture, tc + vec2(1.0, 0.0) / resolution);
-            vec4 topColor = texture2D(texture, tc + vec2(0.0, 1.0) / resolution);
-            vec4 bottomColor = texture2D(texture, tc + vec2(0.0, -1.0) / resolution);
+            vec4 leftColor = texture2D(tex0, tc + vec2(-1.0, 0.0) / canvasSize);
+            vec4 rightColor = texture2D(tex0, tc + vec2(1.0, 0.0) / canvasSize);
+            vec4 topColor = texture2D(tex0, tc + vec2(0.0, 1.0) / canvasSize);
+            vec4 bottomColor = texture2D(tex0, tc + vec2(0.0, -1.0) / canvasSize);
             
             // Combine the neighboring pixels to dilate the image
             vec4 dilatedColor = max(centerColor, max(leftColor, max(rightColor, max(topColor, bottomColor))));
@@ -499,47 +452,57 @@ const fip = {
     dithering:
     `
         precision highp float;
+
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
+        uniform float dotSize;
         uniform float threshold;
 
+        vec4 dither(float gray, vec2 coords) {
+            // Generate a random value for dithering using coordinates
+            float noise = fract(sin(dot(coords.xy, vec2(12.9898, 78.233))) * 43758.5453);
+
+            // Apply dithering noise
+            gray += (noise - 0.5) * 0.1;  // Small dithering adjustment
+            return vec4(vec3(step(threshold, gray)), 1.0);
+        }
 
         void main() {
             vec2 tc = vTexCoord.st;
+
+            // Sample the original color from the texture
+            vec4 originalColor = texture2D(tex0, tc);
             
-            // Sample the original color
-            vec4 originalColor = texture2D(texture, tc);
-            
-            // Convert the color to grayscale
+            // Convert the color to grayscale using the luminosity method
             float gray = dot(originalColor.rgb, vec3(0.299, 0.587, 0.114));
-            
-            // Use a simple 2x2 Bayer matrix for dithering
-            int row = int(mod(gl_FragCoord.y, 2.0));
-            int col = int(mod(gl_FragCoord.x, 2.0));
-            float ditherValue = 0.25 * float(row * 2 + col);
-            
-            // Add the dithering error
-            gray += ditherValue;
 
-            // Threshold the grayscale value
-            vec4 ditheredColor = step(threshold, gray) * vec4(1.0, 1.0, 1.0, 1.0);
+            // Create a grid-like structure based on the dotSize
+            vec2 dotCoord = floor(tc / dotSize) * dotSize;  // Grid position for dithering effect
+            vec2 dotCenter = dotCoord + dotSize * 0.5;  // Center of the current dot
+            
+            // Calculate the distance from the current fragment to the dot center
+            float distanceToCenter = distance(tc, dotCenter);
 
-            // Output the dithered color
-            gl_FragColor = ditheredColor;
+            // Create a circular mask for each dot
+            float circularPattern = smoothstep(0.0, 0.5, 1.0 - distanceToCenter / (dotSize * 0.5));
+            
+            // Apply dithering to the grayscale value with a random noise component
+            gray = gray * circularPattern;  // Use the circular pattern to mask the gray value
+            gl_FragColor = dither(gray, tc);  // Apply dithering based on the gray value
         }
     `,
     dot:
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float dotSize;
 
 
         void main() {
             vec2 tc = vTexCoord.st;
             
-            vec4 color = texture2D(texture, tc);
+            vec4 color = texture2D(tex0, tc);
 
             // Calculate dot matrix coordinates
             vec2 dotCoord = floor(tc / dotSize) * dotSize;
@@ -554,7 +517,7 @@ const fip = {
             float circularPattern = smoothstep(0.0, 0.5, 1.0 - distanceToCenter / (dotSize * 0.5));
 
             // Sample the color at dot matrix position with circular pattern
-            vec4 dotColor = texture2D(texture, dotCoord) * circularPattern;
+            vec4 dotColor = texture2D(tex0, dotCoord) * circularPattern;
 
             // Output the dot matrix color
             gl_FragColor = dotColor;
@@ -564,7 +527,7 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform vec3 tone1;
         uniform vec3 tone2;
 
@@ -573,7 +536,7 @@ const fip = {
             vec2 uv = vTexCoord.st;
 
             // Sample the pixel color
-            vec4 color = texture2D(texture, uv);
+            vec4 color = texture2D(tex0, uv);
 
             // Calculate the luminance of the current pixel color
             float luminance = dot(color.rgb, vec3(0.299, 0.587, 0.114));
@@ -589,13 +552,13 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 uTextureSize;
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
         uniform float threshold;
 
         void main(void) {
             // Calculate the dynamic texOffset based on the texture size
-            vec2 texOffset = 1.0 / uTextureSize;
+            vec2 texOffset = 1.0 / canvasSize;
             
             vec2 tc0 = vTexCoord.st + vec2(-texOffset.s, -texOffset.t);
             vec2 tc1 = vTexCoord.st + vec2(0.0, -texOffset.t);
@@ -607,15 +570,15 @@ const fip = {
             vec2 tc7 = vTexCoord.st + vec2(0.0, texOffset.t);
             vec2 tc8 = vTexCoord.st + vec2(texOffset.s, texOffset.t);
             
-            vec4 col0 = texture2D(texture, tc0);
-            vec4 col1 = texture2D(texture, tc1);
-            vec4 col2 = texture2D(texture, tc2);
-            vec4 col3 = texture2D(texture, tc3);
-            vec4 col4 = texture2D(texture, tc4);
-            vec4 col5 = texture2D(texture, tc5);
-            vec4 col6 = texture2D(texture, tc6);
-            vec4 col7 = texture2D(texture, tc7);
-            vec4 col8 = texture2D(texture, tc8);
+            vec4 col0 = texture2D(tex0, tc0);
+            vec4 col1 = texture2D(tex0, tc1);
+            vec4 col2 = texture2D(tex0, tc2);
+            vec4 col3 = texture2D(tex0, tc3);
+            vec4 col4 = texture2D(tex0, tc4);
+            vec4 col5 = texture2D(tex0, tc5);
+            vec4 col6 = texture2D(tex0, tc6);
+            vec4 col7 = texture2D(tex0, tc7);
+            vec4 col8 = texture2D(tex0, tc8);
 
             // Compute the local average of the pixels
             vec4 localAverage = (col0 + col1 + col2 + col3 + col4 + col5 + col6 + col7 + col8) / 9.0;
@@ -631,20 +594,19 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 uTextureSize;
-
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
 
         void main(void) {
             // Calculate the dynamic texOffset based on the texture size
-            vec2 texOffset = 1.0 / uTextureSize;
+            vec2 texOffset = 1.0 / canvasSize;
             
             vec2 tc = vTexCoord.st;
 
             // Sample the current pixel and the neighboring pixels
-            vec4 currentColor = texture2D(texture, tc);
-            vec4 leftColor = texture2D(texture, tc - texOffset);
-            vec4 rightColor = texture2D(texture, tc + texOffset);
+            vec4 currentColor = texture2D(tex0, tc);
+            vec4 leftColor = texture2D(tex0, tc - texOffset);
+            vec4 rightColor = texture2D(tex0, tc + texOffset);
 
             // Calculate the gradient by subtracting leftColor from rightColor
             vec4 gradient = rightColor - leftColor;
@@ -660,16 +622,16 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 uTextureSize;
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
         const int radius = 3;
 
         void main(void) {
-            vec2 pixelSize = 1.0 / uTextureSize;
-            vec4 centerColor = texture2D(texture, vTexCoord.st);
+            vec2 pixelSize = 1.0 / canvasSize;
+            vec4 centerColor = texture2D(tex0, vTexCoord.st);
             
             // Calculate the dynamic texOffset based on the texture size
-            vec2 texOffset = 1.0 / uTextureSize;
+            vec2 texOffset = 1.0 / canvasSize;
 
             // Define the structuring element (3x3 kernel)
             int kernelSize = radius * 2 + 1;
@@ -678,7 +640,7 @@ const fip = {
             for (int i = -radius; i <= radius; i++) {
                 for (int j = -radius; j <= radius; j++) {
                 vec2 sampleTexCoord = vTexCoord.st + vec2(float(i), float(j)) * texOffset;
-                vec4 sampleColor = texture2D(texture, sampleTexCoord);
+                vec4 sampleColor = texture2D(tex0, sampleTexCoord);
                 float sampleValue = (sampleColor.r + sampleColor.g + sampleColor.b) / 3.0; // Convert to grayscale
 
                 // Apply erosion using the structuring element
@@ -693,14 +655,14 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform bool flipHorizontal;
         uniform bool flipVertical;
         
         void main() {
             vec2 tc = vec2(flipHorizontal ? 1.0 - vTexCoord.s : vTexCoord.s,
                             flipVertical ? 1.0 - vTexCoord.t : vTexCoord.t);
-            vec4 color = texture2D(texture, tc);
+            vec4 color = texture2D(tex0, tc);
             
             gl_FragColor = color;
         }
@@ -709,7 +671,7 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float gamma;
         
         
@@ -717,7 +679,7 @@ const fip = {
             vec2 tc = vTexCoord.st;
             
             // Sample the color from the texture
-            vec4 color = texture2D(texture, tc);
+            vec4 color = texture2D(tex0, tc);
             
             // Apply gamma correction
             vec3 gammaCorrected = pow(color.rgb, vec3(1.0 / gamma));
@@ -730,13 +692,15 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 uTextureSize;
-        
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
+        uniform float blurRadius;  // New parameter to control blur size
+
         void main(void) {
-            // Calculate the dynamic texOffset based on the texture size
-            vec2 texOffset = 1.0 / uTextureSize;
+            // Calculate the dynamic texOffset based on the texture size and blurRadius
+            vec2 texOffset = blurRadius / canvasSize;
             
+            // Sample points based on the blur radius
             vec2 tc0 = vTexCoord.st + vec2(-texOffset.s, -texOffset.t);
             vec2 tc1 = vTexCoord.st + vec2(0.0, -texOffset.t);
             vec2 tc2 = vTexCoord.st + vec2(texOffset.s, -texOffset.t);
@@ -747,39 +711,43 @@ const fip = {
             vec2 tc7 = vTexCoord.st + vec2(0.0, texOffset.t);
             vec2 tc8 = vTexCoord.st + vec2(texOffset.s, texOffset.t);
             
-            vec4 col0 = texture2D(texture, tc0);
-            vec4 col1 = texture2D(texture, tc1);
-            vec4 col2 = texture2D(texture, tc2);
-            vec4 col3 = texture2D(texture, tc3);
-            vec4 col4 = texture2D(texture, tc4);
-            vec4 col5 = texture2D(texture, tc5);
-            vec4 col6 = texture2D(texture, tc6);
-            vec4 col7 = texture2D(texture, tc7);
-            vec4 col8 = texture2D(texture, tc8);
+            // Sample the colors at the given offsets
+            vec4 col0 = texture2D(tex0, tc0);
+            vec4 col1 = texture2D(tex0, tc1);
+            vec4 col2 = texture2D(tex0, tc2);
+            vec4 col3 = texture2D(tex0, tc3);
+            vec4 col4 = texture2D(tex0, tc4);
+            vec4 col5 = texture2D(tex0, tc5);
+            vec4 col6 = texture2D(tex0, tc6);
+            vec4 col7 = texture2D(tex0, tc7);
+            vec4 col8 = texture2D(tex0, tc8);
             
+            // Weighted sum of all the neighboring pixels for blur
             vec4 sum = (1.0 * col0 + 2.0 * col1 + 1.0 * col2 +  
                         2.0 * col3 + 4.0 * col4 + 2.0 * col5 +
-                        1.0 * col6 + 2.0 * col7 + 1.0 * col8) / 16.0;            
-            gl_FragColor = vec4(sum.rgb, 1.0);  
+                        1.0 * col6 + 2.0 * col7 + 1.0 * col8) / 16.0;
+            
+            // Output the blurred color
+            gl_FragColor = vec4(sum.rgb, 1.0);
         }
     `,
     glitch:
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float glitchIntensity;
         
         void main() {
             vec2 tc = vTexCoord.st;
         
             // Sample the original pixel color
-            vec4 originalColor = texture2D(texture, tc);
+            vec4 originalColor = texture2D(tex0, tc);
         
             // Separate RGB channels with glitch displacement
-            float redChannel = texture2D(texture, tc + vec2(glitchIntensity * 0.01, 0.0)).r;
-            float greenChannel = texture2D(texture, tc - vec2(0.0, glitchIntensity * 0.01)).g;
-            float blueChannel = texture2D(texture, tc + vec2(0.0, glitchIntensity * 0.01)).b;
+            float redChannel = texture2D(tex0, tc + vec2(glitchIntensity * 0.01, 0.0)).r;
+            float greenChannel = texture2D(tex0, tc - vec2(0.0, glitchIntensity * 0.01)).g;
+            float blueChannel = texture2D(tex0, tc + vec2(0.0, glitchIntensity * 0.01)).b;
         
             // Combine the glitched channels
             vec4 glitchedColor = vec4(redChannel, greenChannel, blueChannel, 1.0);
@@ -795,12 +763,12 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         
         
         void main() {
             vec2 tc = vTexCoord.st;
-            vec4 color = texture2D(texture, tc);
+            vec4 color = texture2D(tex0, tc);
             
             // Calculate the grayscale value for each pixel
             float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
@@ -813,8 +781,8 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 resolution;
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
         uniform float cellSize;
         uniform float threshold;
         
@@ -822,7 +790,7 @@ const fip = {
             vec2 tc = vTexCoord.st;
         
             // Convert the texture coordinates to screen space
-            vec2 screenCoord = tc * resolution;
+            vec2 screenCoord = tc * canvasSize;
         
             // Calculate the position of the current cell
             vec2 cellPos = floor(screenCoord / cellSize) * cellSize;
@@ -837,7 +805,7 @@ const fip = {
             float distanceToCenter = length(diff);
             
             // Calculate the radius of the dot (based on intensity)
-            float radius = 0.5 * cellSize * (1.0 - texture2D(texture, tc).r);
+            float radius = 0.5 * cellSize * (1.0 - texture2D(tex0, tc).r);
             
             if (distanceToCenter <= radius - threshold) {
                 // Inside the dot, set the color to black
@@ -850,15 +818,15 @@ const fip = {
     `,
     invertColors:
     `
-        precision highp float;
+       precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
 
         void main() {
             vec2 tc = vTexCoord.st;
             
             // Sample the color from the texture
-            vec4 color = texture2D(texture, tc);
+            vec4 color = texture2D(tex0, tc);
 
             // Invert the color by subtracting it from 1.0
             vec3 invertedColor = 1.0 - color.rgb;
@@ -871,8 +839,8 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 uTextureSize;
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
         
         const int kernelSize = 7;
         
@@ -880,7 +848,7 @@ const fip = {
             vec2 tc = vTexCoord.st;
                 
             // Calculate the dynamic texOffset based on the texture size
-            vec2 texOffset = 1.0 / uTextureSize;
+            vec2 texOffset = 1.0 / canvasSize;
             
             // Initialize variables for the four quadrants
             vec4 q1 = vec4(0.0);
@@ -891,7 +859,7 @@ const fip = {
             // Sample pixels for each quadrant
                 for (int i = 0; i < kernelSize; i++) {
                     for (int j = 0; j < kernelSize; j++) {
-                        vec4 color = texture2D(texture, tc + vec2(i, j) * texOffset);
+                        vec4 color = texture2D(tex0, tc + vec2(i, j) * texOffset);
                         
                         if (i < kernelSize / 2) {
                             if (j < kernelSize / 2) {
@@ -944,24 +912,24 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 uTextureSize;
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
         uniform float amount;
         
         void main() {
             vec2 tc = vTexCoord.st;
             
             // Calculate the dynamic texOffset based on the texture size
-            vec2 texOffset = 1.0 / uTextureSize;
+            vec2 texOffset = 1.0 / canvasSize;
         
             // Sample the center pixel
-            vec4 centerColor = texture2D(texture, tc);
+            vec4 centerColor = texture2D(tex0, tc);
             
             // Sample the surrounding pixels
-            vec4 leftColor = texture2D(texture, tc - texOffset);
-            vec4 rightColor = texture2D(texture, tc + texOffset);
-            vec4 topColor = texture2D(texture, tc - vec2(0.0, texOffset.t));
-            vec4 bottomColor = texture2D(texture, tc + vec2(0.0, texOffset.t));
+            vec4 leftColor = texture2D(tex0, tc - texOffset);
+            vec4 rightColor = texture2D(tex0, tc + texOffset);
+            vec4 topColor = texture2D(tex0, tc - vec2(0.0, texOffset.t));
+            vec4 bottomColor = texture2D(tex0, tc + vec2(0.0, texOffset.t));
             
             // Calculate the enhanced color
             vec4 enhancedColor = centerColor + (centerColor - (leftColor + rightColor + topColor + bottomColor) / 4.0) * amount;
@@ -974,7 +942,7 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float threshold;
         uniform vec3 inkColor;
         uniform vec3 paperColor;
@@ -984,7 +952,7 @@ const fip = {
             vec2 uv = vTexCoord.st;
         
             // Sample the pixel color
-            vec4 color = texture2D(texture, uv);
+            vec4 color = texture2D(tex0, uv);
         
             // Convert to grayscale
             float grayscale = dot(color.rgb, vec3(0.299, 0.587, 0.114));
@@ -1003,7 +971,7 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float mosaicSize;
         
         
@@ -1014,7 +982,7 @@ const fip = {
             vec2 mosaicCell = floor(tc * mosaicSize) / mosaicSize;
                 
             // Sample the color from the mosaic cell
-            vec4 mosaicColor = texture2D(texture, mosaicCell);
+            vec4 mosaicColor = texture2D(tex0, mosaicCell);
                 
             // Output the color of the mosaic cell
             gl_FragColor = mosaicColor;
@@ -1024,24 +992,24 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 uTextureSize;
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
             
         void main(){
             const float blurAmount = 10.0;
             
             // Calculate the dynamic texOffset based on the texture size
-            vec2 texOffset = 1.0 / uTextureSize;
+            vec2 texOffset = 1.0 / canvasSize;
             
             // Calculate the texture coordinates for sampling
             vec2 tc = vTexCoord.st - texOffset * blurAmount;
             // Initialize the color accumulator
-            vec4 sum = texture2D(texture, tc);
+            vec4 sum = texture2D(tex0, tc);
             
             // Sample multiple times along the motion direction and accumulate colors
             for (float i = 1.0; i < blurAmount; i += 1.0) {
                 tc -= texOffset;
-                sum += texture2D(texture, tc);
+                sum += texture2D(tex0, tc);
             }
             
             // Calculate the final blurred color by averaging the samples
@@ -1055,18 +1023,17 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float pixelSize;
-        
         
         void main() {
             vec2 tc = vTexCoord.st;
             
             // Calculate the position in the pixel grid
-                vec2 pixelPos = vec2(floor(tc.x / pixelSize) * pixelSize, floor(tc.y / pixelSize) * pixelSize);
+            vec2 pixelPos = vec2(floor(tc.x / pixelSize) * pixelSize, floor(tc.y / pixelSize) * pixelSize);
             
             // Sample the color at the pixel position
-            vec4 pixelColor = texture2D(texture, pixelPos);
+            vec4 pixelColor = texture2D(tex0, pixelPos);
             // Output the pixelated color
             gl_FragColor = pixelColor;
         }
@@ -1075,7 +1042,7 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float shades;
         
         
@@ -1083,7 +1050,7 @@ const fip = {
             vec2 tc = vTexCoord.st;
             
             // Sample the original color
-            vec4 color = texture2D(texture, tc);
+            vec4 color = texture2D(tex0, tc);
             
             // Quantize the color values
             color.rgb = floor(color.rgb * shades) / (shades - 1.0);
@@ -1096,16 +1063,16 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform vec2 resolution;
-        uniform sampler2D texture;
+        uniform vec2 canvasSize;
+        uniform sampler2D tex0;
         uniform float rippleFrequency;
-        uniform float rippleAmplitude; // Amplitude or strength of the ripples
+        uniform float rippleAmplitude;
         
         void main() {
             vec2 uv = vTexCoord.st;
             
             // Center coordinates of the screen with offset
-            vec2 center = resolution / 2.0;
+            vec2 center = canvasSize / 2.0;
                 
             // Calculate the distance from the current pixel to the center
             float distance = length(uv - center);
@@ -1117,7 +1084,7 @@ const fip = {
             vec2 tc = uv + ripple;
                 
             // Sample the pixel color
-            vec4 color = texture2D(texture, tc);
+            vec4 color = texture2D(tex0, tc);
                 
             // Output the adjusted color
             gl_FragColor = color;
@@ -1127,7 +1094,7 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float rotationAngle; // Rotation angle in degrees
         
         void main() {
@@ -1145,7 +1112,7 @@ const fip = {
                 gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
             } else {
                 // Sample the color from the original texture at the rotated coordinates
-                gl_FragColor = texture2D(texture, rotatedTexCoord);
+                gl_FragColor = texture2D(tex0, rotatedTexCoord);
             }
         }
     `,
@@ -1153,7 +1120,7 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float saturation;
         
         
@@ -1161,7 +1128,7 @@ const fip = {
             vec2 tc = vTexCoord.st;
             
             // Sample the original color
-            vec4 originalColor = texture2D(texture, tc);
+            vec4 originalColor = texture2D(tex0, tc);
             
             // Convert to grayscale (luminance)
             float luminance = dot(originalColor.rgb, vec3(0.2126, 0.7152, 0.0722));
@@ -1182,13 +1149,13 @@ const fip = {
         */
         
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         
         void main() {
             vec2 tc = vTexCoord.st;
             
             // Sample the texture color
-            vec4 color = texture2D(texture, tc);
+            vec4 color = texture2D(tex0, tc);
             
             // Convert to grayscale
             float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
@@ -1204,19 +1171,19 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 resolution;
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
         uniform float sharpness;
         
         void main() {
             // Center pixel
-            vec4 centerColor = texture2D(texture, vTexCoord);
+            vec4 centerColor = texture2D(tex0, vTexCoord);
         
             // Neighboring pixels
-            vec4 topColor = texture2D(texture, vTexCoord + vec2(0.0, 1.0) / resolution);
-            vec4 bottomColor = texture2D(texture, vTexCoord + vec2(0.0, -1.0) / resolution);
-            vec4 leftColor = texture2D(texture, vTexCoord + vec2(-1.0, 0.0) / resolution);
-            vec4 rightColor = texture2D(texture, vTexCoord + vec2(1.0, 0.0) / resolution);
+            vec4 topColor = texture2D(tex0, vTexCoord + vec2(0.0, 1.0) / canvasSize);
+            vec4 bottomColor = texture2D(tex0, vTexCoord + vec2(0.0, -1.0) / canvasSize);
+            vec4 leftColor = texture2D(tex0, vTexCoord + vec2(-1.0, 0.0) / canvasSize);
+            vec4 rightColor = texture2D(tex0, vTexCoord + vec2(1.0, 0.0) / canvasSize);
         
             // Calculate the sharpened color
             vec4 sharpenedColor = centerColor * (1.0 + 4.0 * sharpness) - sharpness * (topColor + bottomColor + leftColor + rightColor);
@@ -1228,22 +1195,22 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 uTextureSize;
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
         uniform float threshold;
         
         void main() {
             vec2 tc = vTexCoord.st;
             
             // Calculate the dynamic texOffset based on the texture size
-            vec2 texOffset = 1.0 / uTextureSize;
+            vec2 texOffset = 1.0 / canvasSize;
             
             // Sample the surrounding pixels
-            vec4 centerColor = texture2D(texture, tc);
-            vec4 leftColor = texture2D(texture, tc - texOffset);
-            vec4 rightColor = texture2D(texture, tc + texOffset);
-            vec4 topColor = texture2D(texture, tc - vec2(0.0, texOffset.t));
-            vec4 bottomColor = texture2D(texture, tc + vec2(0.0, texOffset.t));
+            vec4 centerColor = texture2D(tex0, tc);
+            vec4 leftColor = texture2D(tex0, tc - texOffset);
+            vec4 rightColor = texture2D(tex0, tc + texOffset);
+            vec4 topColor = texture2D(tex0, tc - vec2(0.0, texOffset.t));
+            vec4 bottomColor = texture2D(tex0, tc + vec2(0.0, texOffset.t));
             
             // Apply the Sobel operator for edge detection
             float horizontalGradient = -leftColor.r + rightColor.r - topColor.r + bottomColor.r;
@@ -1263,22 +1230,22 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 uTextureSize;
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
         uniform float threshold;
         
         void main() {
             vec2 tc = vTexCoord.st;
         
             // Calculate the dynamic texOffset based on the texture size
-            vec2 texOffset = 1.0 / uTextureSize;
+            vec2 texOffset = 1.0 / canvasSize;
             
             // Sample the surrounding pixels
-            vec4 centerColor = texture2D(texture, tc);
-            vec4 leftColor = texture2D(texture, tc - texOffset);
-            vec4 rightColor = texture2D(texture, tc + texOffset);
-            vec4 topColor = texture2D(texture, tc - vec2(0.0, texOffset.t));
-            vec4 bottomColor = texture2D(texture, tc + vec2(0.0, texOffset.t));
+            vec4 centerColor = texture2D(tex0, tc);
+            vec4 leftColor = texture2D(tex0, tc - texOffset);
+            vec4 rightColor = texture2D(tex0, tc + texOffset);
+            vec4 topColor = texture2D(tex0, tc - vec2(0.0, texOffset.t));
+            vec4 bottomColor = texture2D(tex0, tc + vec2(0.0, texOffset.t));
             
             // Calculate the intensity gradients
             float horizontalGradient = length(leftColor - rightColor);
@@ -1298,7 +1265,7 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float threshold;
         
         
@@ -1306,7 +1273,7 @@ const fip = {
             vec2 tc = vTexCoord.st;
             
             // Sample the original color
-            vec4 color = texture2D(texture, tc);
+            vec4 color = texture2D(tex0, tc);
             
             // Calculate the average intensity of the pixel color
             float intensity = (color.r + color.g + color.b) / 3.0;
@@ -1324,8 +1291,8 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
-        uniform vec2 uTextureSize;
+        uniform sampler2D tex0;
+        uniform vec2 canvasSize;
         uniform float threshold;
         uniform float stippleDensity;
         
@@ -1338,14 +1305,14 @@ const fip = {
             vec2 tc = vTexCoord.st;
             
             // Calculate the dynamic texOffset based on the texture size
-            vec2 texOffset = 1.0 / uTextureSize;
+            vec2 texOffset = 1.0 / canvasSize;
                 
             // Sample the surrounding pixels
-            vec4 centerColor = texture2D(texture, tc);
-            vec4 leftColor = texture2D(texture, tc - texOffset);
-            vec4 rightColor = texture2D(texture, tc + texOffset);
-            vec4 topColor = texture2D(texture, tc - vec2(0.0, texOffset.t));
-            vec4 bottomColor = texture2D(texture, tc + vec2(0.0, texOffset.t));
+            vec4 centerColor = texture2D(tex0, tc);
+            vec4 leftColor = texture2D(tex0, tc - texOffset);
+            vec4 rightColor = texture2D(tex0, tc + texOffset);
+            vec4 topColor = texture2D(tex0, tc - vec2(0.0, texOffset.t));
+            vec4 bottomColor = texture2D(tex0, tc + vec2(0.0, texOffset.t));
                 
             // Calculate the intensity gradients
             float horizontalGradient = length(leftColor - rightColor);
@@ -1369,14 +1336,14 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float threshold;
         
         void main() {
             vec2 tc = vTexCoord.st;
             
             // Sample the original color
-            vec4 originalColor = texture2D(texture, tc);
+            vec4 originalColor = texture2D(tex0, tc);
             
             // Convert to grayscale (luminance)
             float luminance = dot(originalColor.rgb, vec3(0.2126, 0.7152, 0.0722));
@@ -1392,21 +1359,21 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         uniform float strength;
-        uniform vec2 uTextureSize;
+        uniform vec2 canvasSize;
         
         void main() {
             vec2 tc = vTexCoord.st;
             
             // Sample the original color
-            vec4 originalColor = texture2D(texture, tc);
+            vec4 originalColor = texture2D(tex0, tc);
             
             // Calculate the dynamic texOffset based on the texture size
-            vec2 texOffset = 1.0 / uTextureSize;
+            vec2 texOffset = 1.0 / canvasSize;
             
             // Sample a blurred version of the image
-                vec4 blurredColor = texture2D(texture, vTexCoord.st + vec2(-texOffset.s, -texOffset.t));
+                vec4 blurredColor = texture2D(tex0, vTexCoord.st + vec2(-texOffset.s, -texOffset.t));
             
             // Calculate the difference between the original and blurred image
             vec4 difference = originalColor - blurredColor;
@@ -1421,9 +1388,9 @@ const fip = {
     `
         precision highp float;
         varying vec2 vTexCoord;
-        uniform sampler2D texture;
+        uniform sampler2D tex0;
         
-        uniform vec2 uTextureSize;
+        uniform vec2 canvasSize;
         uniform float vignetteStrength; // 0.0 (none) to 1.0 (maximum)
         uniform float vignetteFalloff; // Rate at which the vignette diminishes
         uniform float vignetteSign;    // -1.0 (inward) or 1.0 (outward)
@@ -1431,7 +1398,7 @@ const fip = {
         
         
         void main() {
-            vec2 texSize = uTextureSize;
+            vec2 texSize = canvasSize;
             
             // Calculate the center position of the image
             vec2 center = vec2(texSize.x * 0.5, texSize.y * 0.5);
@@ -1451,7 +1418,7 @@ const fip = {
             // Apply size to the vignette
             vignette *= smoothstep(0.0, 1.0, 1.0 - distance / vignetteSize);
             
-            vec4 color = texture2D(texture, vTexCoord.st);
+            vec4 color = texture2D(tex0, vTexCoord.st);
             gl_FragColor = vec4(color.rgb * vignette, color.a);
         }
     `

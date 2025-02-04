@@ -8,7 +8,7 @@ To use FIP you can include it in your index.html file:
     </head>
 ```
 
-Alternatively you can download the p5.FIP.js file from releases and bring it into your project files:
+Alternatively you can download the p5.FIP.js file from [releases](https://github.com/prontopablo/p5.FIP/releases/latest) and bring it into your project files:
 ``` html hl_lines="3"
     <head>
     <!-- ...-->

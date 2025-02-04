@@ -1,7 +1,9 @@
 As I've developed p5.FIP I've realised there is a lack of documentation for p5.js and Processing shaders. Below is a list of useful resources grouped by category.
 
-## Learning about Processing shaders
+## Learning about p5.js / Processing shaders
 - If you're writing shaders for Processing, I would highly recommend [this archived tutorial](https://web.archive.org/web/20210117181532/https://processing.org/tutorials/pshader/). 
+
+- Learn about [createFilterShader](https://p5js.org/reference/p5/createFilterShader/).
 
 - The replies to [this Reddit post](https://www.reddit.com/r/processing/comments/ritpd8/shaders_in_processing/) list various resources and examples.
 
