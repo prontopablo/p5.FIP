@@ -79,7 +79,7 @@ In accordance with the [p5.js library guidelines](https://github.com/processing/
 3. [Examples](https://github.com/prontopablo/p5.FIP/tree/main/examples) are included.
 4. p5.FIP is open source.
 5. Keywords: _image-processing, post-processing, filters_.
-6. Last update: 20/11/24.
+6. Last update: 04/02/25.
 
 ## Contributing
 I welcome contributions from the community to make p5.FIP better. If you have any suggestions, bug fixes, or new features to add, feel free to create a [pull request](https://github.com/prontopablo/p5.FIP/pulls).
