@@ -4,10 +4,13 @@
 
 let ireland, motionBlur;
 
+function preload() {
+  ireland = loadImage("ireland.jpg");
+}
+
 function setup() {
   createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
   motionBlur = createFilterShader(fip.motionBlur); // Load the motion blur shader
-  ireland = loadImage("ireland.jpg");
 }
   
 function draw() {
