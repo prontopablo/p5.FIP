@@ -1,6 +1,7 @@
 /* 
    Example sketch demonstrating the blend filter in FIP. 
    Press any key to cycle through blending modes.
+   With help from SableRaf and epibyte!
 */
 
 let layer1, layer2,
@@ -10,7 +11,7 @@ let layer1, layer2,
   blendingModeIndex = 0;
 
   function preload(){
-    ireland = loadImage("ireland.jpg");
+    ireland = loadImage("ireland.jpg"); // *** ADD YOUR PICTURES HERE ***
     bird = loadImage("bird.jpg");
   }
   
