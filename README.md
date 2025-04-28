@@ -38,7 +38,7 @@ Alternatively you can download the p5.FIP.js file from [releases](https://github
 The reference website can be found [here](https://prontopablo.github.io/p5.FIP/).
 
 > [!WARNING]
-> This library is for **p5.js**. If you are using _Processing_ instead, head [here](https://github.com/prontopablo/FIP).
+> If you are using noLoop(), in the example sketches on the documentation website, the images are loaded in setup(), these should be loaded in preload() instead. Also, the shader parameters should be set before calling filter(). These two issues will only rear their head if you are using noLoop(). This library is for **p5.js**. If you are using _Processing_ instead, head [here](https://github.com/prontopablo/FIP).
 
 ## Examples
 Example sketches can be found in this collection [here](https://editor.p5js.org/prontopablo/collections/MA4R8jvck) and they are also included in the [examples folder](https://github.com/prontopablo/p5.FIP/tree/main/examples) on GitHub.
@@ -79,7 +79,7 @@ In accordance with the [p5.js library guidelines](https://github.com/processing/
 3. [Examples](https://github.com/prontopablo/p5.FIP/tree/main/examples) are included.
 4. p5.FIP is open source.
 5. Keywords: _image-processing, post-processing, filters_.
-6. Last update: 04/02/25.
+6. Last update: 28/04/25.
 
 ## Contributing
 I welcome contributions from the community to make p5.FIP better. If you have any suggestions, bug fixes, or new features to add, feel free to create a [pull request](https://github.com/prontopablo/p5.FIP/pulls).
