@@ -19,6 +19,9 @@ p5.FIP is a library that allows you to add image processing/post-processing effe
 
 ## Getting Started
 
+> [!IMPORTANT]
+> This library is for **p5.js**. If you are using _Processing_ instead, head [here](https://github.com/prontopablo/FIP).
+
 To use p5.FIP you can include it in your index.html file:
 ```html
     <head>
@@ -38,7 +41,7 @@ Alternatively you can download the p5.FIP.js file from [releases](https://github
 The reference website can be found [here](https://prontopablo.github.io/p5.FIP/).
 
 > [!WARNING]
-> If you are using noLoop(), in the example sketches on the documentation website, the images are loaded in setup(), these should be loaded in preload() instead. Also, the shader parameters should be set before calling filter(). These two issues will only rear their head if you are using noLoop(). This library is for **p5.js**. If you are using _Processing_ instead, head [here](https://github.com/prontopablo/FIP).
+> If you are using noLoop(), images should be loaded in preload() instead. Also, the shader parameters should be set before calling filter(). These two issues will only rear their head if you are using noLoop(). 
 
 ## Examples
 Example sketches can be found in this collection [here](https://editor.p5js.org/prontopablo/collections/MA4R8jvck) and they are also included in the [examples folder](https://github.com/prontopablo/p5.FIP/tree/main/examples) on GitHub.
@@ -85,6 +88,8 @@ In accordance with the [p5.js library guidelines](https://github.com/processing/
 I welcome contributions from the community to make p5.FIP better. If you have any suggestions, bug fixes, or new features to add, feel free to create a [pull request](https://github.com/prontopablo/p5.FIP/pulls).
 
 ## Acknowledgments
+♥️ Thank you to [epibyte](https://github.com/epibyte) and [SableRaf](https://github.com/SableRaf) for spotting the first frame issue with the example sketches.
+
 Many of these shaders were adapted from existing solutions in other programming languages, in these cases, the links to the original shaders or tutorials followed can be found at the top of each shader.
 
 A list of existing Processing image processing libraries can be found [here](https://prontopablo.github.io/p5.FIP/resources).
