@@ -6,7 +6,7 @@
 */
 
 let layer, layer1, layer2;
-let currentShaderIndex = 9;
+let currentShaderIndex = 2;
 let currentImageIndex = 0;
 let images = [];
 let customShaders = [];
@@ -24,6 +24,15 @@ const shaderNames = [
   "Solarize", "Static", "Threshold", "Unsharp Masking", "Vignette"
 ];
 
+
+function preload(){
+  // Load sample images
+  images = [
+    loadImage("ireland.jpg"), // *** ADD YOUR IMAGES HERE ***
+    loadImage("bird.jpg")
+  ];
+}
+
 function setup() {
   createCanvas(600, 600, WEBGL);
   
@@ -31,13 +40,8 @@ function setup() {
   customShaders = Object.keys(fip)
     .filter(key => key !== "defaultVert")
     .map(key => createFilterShader(fip[key]));
-
-  // Load sample images
-  images = [
-    loadImage("ireland.jpg"), 
-    loadImage("bird.jpg")
-  ];
   
+  // Create framebuffers for blending textures together
   layer = createFramebuffer();
   layer1 = createFramebuffer();
   layer2 = createFramebuffer();
@@ -62,14 +66,8 @@ function draw() {
         image(images[1], 0, 0, width, height);
         layer2.end();
     }
-
-    // Apply the selected shader
-    let currentShader = customShaders[currentShaderIndex];  
-    filter(currentShader);
-    
-    // Set common uniforms
-    // currentShader.setUniform("texture", layer.color);
-    // currentShader.setUniform("resolution", [width, height]);
+  
+    let currentShader = customShaders[currentShaderIndex];   
   
     // Apply specific shader uniforms (play around with values here!)
     switch (currentShaderIndex) {
@@ -86,7 +84,6 @@ function draw() {
             currentShader.setUniform("uTextureSize", [width, height]);
             currentShader.setUniform('mixFactor', 0.5);
             currentShader.setUniform('blendingMode', 0);
-            images
             break;
         case 3:
             currentShader.setUniform('intensity', 0.8); // Bloom
@@ -171,7 +168,7 @@ function draw() {
             currentShader.setUniform('rippleAmplitude', 0.01);
             break;
         case 34:
-            currentShader.setUniform("rotationAngle", -45); // Rotate
+            currentShader.setUniform("rotationAngle", -95); // Rotate
             break;
         case 35:
             currentShader.setUniform('saturation', 5.5);  // Saturation
@@ -206,7 +203,8 @@ function draw() {
             break;
         default:
             break;
-    }
+    } 
+    filter(currentShader);
 }
 
 // Handle keyboard input to cycle shaders and images
