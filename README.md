@@ -45,7 +45,7 @@ The reference website can be found [here](https://prontopablo.github.io/p5.FIP/)
 
 ## Examples
 Example sketches can be found in this collection [here](https://editor.p5js.org/prontopablo/collections/MA4R8jvck) and they are also included in the [examples folder](https://github.com/prontopablo/p5.FIP/tree/main/examples) on GitHub.
-
+kfahn22 made an [abstract art example](https://openprocessing.org/sketch/2615936) by combining the pixelate and ripple filters.
 <h3> Here's an example showing how to apply motion blur to an image: </h3>
 
 ```js
