@@ -54,7 +54,7 @@ let ireland, motionBlur;
 function setup() {
   createCanvas(600, 600, WEBGL); // Use WEBGL mode to use shaders
   motionBlur = createFilterShader(fip.motionBlur); // Load the motion blur shader
-  ireland = loadImage("ireland.jpg");
+  ireland = loadImage("ireland.jpg"); // Image would be in preload() if using noLoop()
 }
   
 function draw() {
@@ -82,7 +82,7 @@ In accordance with the [p5.js library guidelines](https://github.com/processing/
 3. [Examples](https://github.com/prontopablo/p5.FIP/tree/main/examples) are included.
 4. p5.FIP is open source.
 5. Keywords: _image-processing, post-processing, filters_.
-6. Last update: 28/04/25.
+6. Last update: 22/08/25.
 
 ## Contributing
 I welcome contributions from the community to make p5.FIP better. If you have any suggestions, bug fixes, or new features to add, feel free to create a [pull request](https://github.com/prontopablo/p5.FIP/pulls).

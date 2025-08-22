@@ -45,12 +45,14 @@ In accordance with the [p5.js library guidelines](https://github.com/processing/
 3. [Examples](https://github.com/prontopablo/p5.FIP/tree/main/examples) are included.
 4. p5.FIP is open source. [Source Code](https://github.com/prontopablo/p5.FIP/).
 5. Keywords: _image-processing, post-processing, filters_.
-6. Last update: 03/02/25.
+6. Last update: 22/08/25.
 
 ## Contributing
 I welcome contributions from the community to make p5.FIP better. If you have any suggestions, bug fixes, or new features to add, feel free to create a [pull request](https://github.com/prontopablo/p5.FIP/pulls).
 
 ## Acknowledgments
+♥️ Thank you to epibyte and SableRaf for spotting the first frame issue with the example sketches.
+
 Many of these shaders were adapted from existing solutions in other programming languages, in these cases, the links to the original shaders or tutorials followed can be found at the top of each shader.
 
 A list of existing Processing image processing libraries can be found [here](./resources.md).
