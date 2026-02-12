@@ -11,21 +11,21 @@ Performs basic anti-aliasing using a 2x2 super-sampling technique. Takes four sa
 ```javascript hl_lines="18"
 let bird, antiAliasing;
 
-function setup() {
+async function setup() {
   createCanvas(600, 600, WEBGL); // Use WEBGL mode to use the shader
   antiAliasing = createFilterShader(fip.antiAliasing); // Load the shader
-  bird = loadImage("bird.jpg");
+  bird = await loadImage("bird.jpg");
 }
   
 function draw() {
   background(0);
   imageMode(CENTER);
   image(bird, 0, 0, width, height);
-    
-  // Apply the shader
-  filter(antiAliasing);
-    
+  
   // Set the shader uniforms
   antiAliasing.setUniform('strength', 0.9);
+
+  // Apply the shader
+  filter(antiAliasing);
 }
 ```

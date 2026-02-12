@@ -32,13 +32,13 @@ Blends textures together based on a mix factor and blending type.
 ```javascript hl_lines="34 35 36 37 38"
 let layer1, layer2, ireland, bird, blend, blendingModeIndex = 0;
 
-function setup() {
+async function setup() {
     createCanvas(600, 600, WEBGL); // Enable WEBGL mode for shaders
     
     blend = createFilterShader(fip.blend); // Load the blend shader
     
-    ireland = loadImage("ireland.jpg");
-    bird = loadImage("bird.jpg");
+    ireland = await loadImage("ireland.jpg");
+    bird = await loadImage("bird.jpg");
     
     // Create 2 framebuffers so we can control which textures are sent to the shaders
     layer1 = createFramebuffer();
@@ -59,15 +59,15 @@ function draw() {
     image(bird, 0, 0, width, height);
     layer2.end();
     
-    // Apply the blend shader
-    filter(blend);
-    
     // Send our two textures to the shader
     blend.setUniform('texture1', layer1.color);
     blend.setUniform('texture2', layer2.color);
     blend.setUniform("uTextureSize", [width, height]);
     blend.setUniform('mixFactor', 0.5);
     blend.setUniform('blendingMode', blendingModeIndex);
+
+    // Apply the blend shader
+    filter(blend);
 }
   
 function keyPressed() {
@@ -88,3 +88,5 @@ function keyPressed() {
         <figcaption>Blended image</figcaption>
     </div>
 </div>
+
+> **Note:** The rest of the reference pages from here on out simply list sample parameter values, not an entire sketch.

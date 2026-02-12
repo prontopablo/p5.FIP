@@ -1476,6 +1476,9 @@ Alternatively you can download the p5.FIP.js file from <a href="https://github.c
 <p>The reference for each shader can be found in the sidebar of this website.</p>
 <h2 id="examples">Examples</h2>
 <p>Example sketches can be found in this collection <a href="https://editor.p5js.org/prontopablo/collections/MA4R8jvck">here</a> and they are also included in the <a href="https://github.com/prontopablo/p5.FIP/tree/main/examples">examples folder</a> on GitHub. </p>
+<blockquote>
+<p>If you are using a version of p5.js before <code>2.0</code> and up (e.g. <code>1.9</code>), images can be loaded in preload() instead. <code>2.0</code> removed the <code>preload()</code> function, and so images should be loaded in <code>async setup()</code>, using <code>await loadImage()</code> as seen in the example below. See this <a href="https://github.com/prontopablo/p5.FIP/issues/5">issue</a> for details.</p>
+</blockquote>
 <h2 id="p5js-library-guidelines">p5.js Library Guidelines</h2>
 <p>In accordance with the <a href="https://github.com/processing/p5.js/blob/main/contributor_docs/creating_libraries.md">p5.js library guidelines</a>:</p>
 <ol>
@@ -1483,12 +1486,19 @@ Alternatively you can download the p5.FIP.js file from <a href="https://github.c
 <li><a href="https://github.com/prontopablo/p5.FIP/tree/main/examples">Examples</a> are included.</li>
 <li>p5.FIP is open source. <a href="https://github.com/prontopablo/p5.FIP/">Source Code</a>.</li>
 <li>Keywords: <em>image-processing, post-processing, filters</em>.</li>
-<li>Last update: 22/08/25.</li>
+<li>Last update: 12/02/26.</li>
 </ol>
 <h2 id="contributing">Contributing</h2>
 <p>I welcome contributions from the community to make p5.FIP better. If you have any suggestions, bug fixes, or new features to add, feel free to create a <a href="https://github.com/prontopablo/p5.FIP/pulls">pull request</a>.</p>
-<h2 id="acknowledgments">Acknowledgments</h2>
-<p>♥️ Thank you to epibyte and SableRaf for spotting the first frame issue with the example sketches.</p>
+<h2 id="acknowledgments">Acknowledgments ♥️</h2>
+<ul>
+<li>
+<p>Thank you to <a href="https://github.com/epibyte">epibyte</a> and <a href="https://github.com/SableRaf">SableRaf</a> for spotting the first frame issue with the example sketches. </p>
+</li>
+<li>
+<p>Thank you to <a href="https://github.com/filete">filete</a> for notifying me when p5.js 2.0 broke the example sketches.</p>
+</li>
+</ul>
 <p>Many of these shaders were adapted from existing solutions in other programming languages, in these cases, the links to the original shaders or tutorials followed can be found at the top of each shader.</p>
 <p>A list of existing Processing image processing libraries can be found <a href="resources.html">here</a>.</p>
 
