@@ -41,7 +41,7 @@ Alternatively you can download the p5.FIP.js file from [releases](https://github
 The reference website can be found [here](https://prontopablo.github.io/p5.FIP/).
 
 > [!WARNING]
-> If you are using noLoop(), images should be loaded in preload() instead. Also, the shader parameters should be set before calling filter(). These two issues will only rear their head if you are using noLoop(). 
+> If you are using a version of p5.js before `2.0` and up (e.g. `1.9`), images can be loaded in preload() instead. `2.0` removed the `preload()` function, and so images should be loaded in `async setup()`, using `await loadImage()` as seen in the example below.
 
 ## Examples
 Example sketches can be found in this collection [here](https://editor.p5js.org/prontopablo/collections/MA4R8jvck) and they are also included in the [examples folder](https://github.com/prontopablo/p5.FIP/tree/main/examples) on GitHub.
@@ -51,10 +51,10 @@ kfahn22 made an [abstract art example](https://openprocessing.org/sketch/2615936
 ```js
 let ireland, motionBlur;
 
-function setup() {
+async function setup() {
   createCanvas(600, 600, WEBGL); // Use WEBGL mode to use shaders
   motionBlur = createFilterShader(fip.motionBlur); // Load the motion blur shader
-  ireland = loadImage("ireland.jpg"); // Image would be in preload() if using noLoop()
+  ireland = await loadImage("ireland.jpg");
 }
   
 function draw() {
@@ -67,7 +67,7 @@ function draw() {
 }  
 ```
 > [!IMPORTANT]  
-> The most recent release of p5.FIP changed how textures work. Now the entire canvas is the default texture. However, if we wanted to only pass a specific texture to our shader, we could use a _framebuffer_ - see the [blend example](https://editor.p5js.org/prontopablo/sketches/AoeQAXAap) for details.
+> Recent releases of p5.FIP changed how textures work. Now the entire canvas is the default texture. However, if we wanted to only pass a specific texture to our shader, we could use a _framebuffer_ - see the [blend example](https://editor.p5js.org/prontopablo/sketches/AoeQAXAap) for details.
 
 ## Repository Structure
 - _p5.FIP.js:_ Shader code itself. This is where the actual functionality of the library is.
@@ -82,13 +82,13 @@ In accordance with the [p5.js library guidelines](https://github.com/processing/
 3. [Examples](https://github.com/prontopablo/p5.FIP/tree/main/examples) are included.
 4. p5.FIP is open source.
 5. Keywords: _image-processing, post-processing, filters_.
-6. Last update: 22/08/25.
+6. Last update: 12/02/26.
 
 ## Contributing
 I welcome contributions from the community to make p5.FIP better. If you have any suggestions, bug fixes, or new features to add, feel free to create a [pull request](https://github.com/prontopablo/p5.FIP/pulls).
 
 ## Acknowledgments
-♥️ Thank you to [epibyte](https://github.com/epibyte) and [SableRaf](https://github.com/SableRaf) for spotting the first frame issue with the example sketches.
+♥️ Thank you to [epibyte](https://github.com/epibyte) and [SableRaf](https://github.com/SableRaf) for spotting the first frame issue with the example sketches. Thank you to [filete](https://github.com/filete) for notifying me when p5.js 2.0 broke the example sketches.
 
 Many of these shaders were adapted from existing solutions in other programming languages, in these cases, the links to the original shaders or tutorials followed can be found at the top of each shader.
 
